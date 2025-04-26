@@ -15,6 +15,10 @@ public class AppointmentDAO {
         this.dbConfig = DatabaseConfig.getInstance();
     }
 
+    public AppointmentDAO(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
+
     public Appointment findById(int appointmentId) throws SQLException {
         String sql = "SELECT * FROM appointments WHERE AppointmentId = ?";
         try (Connection conn = dbConfig.getConnection();

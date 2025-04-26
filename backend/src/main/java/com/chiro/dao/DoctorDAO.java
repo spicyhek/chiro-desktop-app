@@ -15,6 +15,10 @@ public class DoctorDAO {
         this.dbConfig = DatabaseConfig.getInstance();
     }
 
+    public DoctorDAO(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
+
     public Doctor findById(int doctorId) throws SQLException {
         String sql = "SELECT * FROM doctors WHERE DoctorId = ?";
         try (Connection conn = dbConfig.getConnection();

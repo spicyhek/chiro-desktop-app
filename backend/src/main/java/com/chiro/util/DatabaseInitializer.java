@@ -1,6 +1,8 @@
 package com.chiro.util;
 
 import com.chiro.config.DatabaseConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -10,10 +12,16 @@ import java.sql.Statement;
 import java.util.stream.Collectors;
 
 public class DatabaseInitializer {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
+    
     private final DatabaseConfig dbConfig;
 
     public DatabaseInitializer() {
         this.dbConfig = DatabaseConfig.getInstance();
+    }
+
+    public DatabaseInitializer(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
     }
 
     public void initializeDatabase() {
@@ -26,9 +34,9 @@ public class DatabaseInitializer {
             // Execute the schema
             stmt.execute(schemaSql);
             
-            System.out.println("Database initialized successfully");
+            logger.info("Database initialized successfully");
         } catch (Exception e) {
-            System.err.println("Error initializing database: " + e.getMessage());
+            logger.error("Error initializing database: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize database", e);
         }
     }

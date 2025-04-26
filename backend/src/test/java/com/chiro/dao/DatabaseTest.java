@@ -5,6 +5,7 @@ import com.chiro.models.Appointment;
 import com.chiro.models.Doctor;
 import com.chiro.models.Insurance;
 import com.chiro.models.Patient;
+import com.chiro.util.DatabaseInitializer;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
@@ -22,32 +23,47 @@ public class DatabaseTest {
     private static InsuranceDAO insuranceDAO;
     private static AppointmentDAO appointmentDAO;
     private static RecordDAO recordDAO;
+    private static DatabaseConfig dbConfig;
 
     @BeforeAll
     static void setup() throws SQLException {
-        // Initialize DAOs
-        patientDAO = new PatientDAO();
-        doctorDAO = new DoctorDAO();
-        insuranceDAO = new InsuranceDAO();
-        appointmentDAO = new AppointmentDAO();
-        recordDAO = new RecordDAO();
+        // Initialize database with test-specific database file
+        dbConfig = DatabaseConfig.getInstance("jdbc:sqlite:test.db");
+        new DatabaseInitializer(dbConfig).initializeDatabase();
+
+        // Initialize DAOs with test database configuration
+        patientDAO = new PatientDAO(dbConfig);
+        doctorDAO = new DoctorDAO(dbConfig);
+        insuranceDAO = new InsuranceDAO(dbConfig);
+        appointmentDAO = new AppointmentDAO(dbConfig);
+        recordDAO = new RecordDAO(dbConfig);
 
         // Clear existing data
         clearDatabase();
     }
 
+    @AfterAll
+    static void cleanup() {
+        // Delete the test database file
+        try {
+            java.nio.file.Files.deleteIfExists(java.nio.file.Path.of("test.db"));
+        } catch (Exception e) {
+            // Ignore cleanup errors
+        }
+    }
+
     private static void clearDatabase() throws SQLException {
-        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+        try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             // Disable foreign key constraints
             stmt.execute("PRAGMA foreign_keys = OFF");
             
             // Clear tables in correct order to respect foreign key constraints
-            stmt.execute("DELETE FROM records");
-            stmt.execute("DELETE FROM appointments");
-            stmt.execute("DELETE FROM patients");
-            stmt.execute("DELETE FROM doctors");
-            stmt.execute("DELETE FROM insurance");
+            stmt.execute("DELETE FROM Record");
+            stmt.execute("DELETE FROM Appointment");
+            stmt.execute("DELETE FROM Patient");
+            stmt.execute("DELETE FROM Doctor");
+            stmt.execute("DELETE FROM Insurance");
             
             // Re-enable foreign key constraints
             stmt.execute("PRAGMA foreign_keys = ON");

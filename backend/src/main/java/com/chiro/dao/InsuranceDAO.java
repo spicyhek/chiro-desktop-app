@@ -15,6 +15,10 @@ public class InsuranceDAO {
         this.dbConfig = DatabaseConfig.getInstance();
     }
 
+    public InsuranceDAO(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
+
     public Insurance findById(int insuranceId) throws SQLException {
         String sql = "SELECT * FROM insurance WHERE InsuranceId = ?";
         try (Connection conn = dbConfig.getConnection();

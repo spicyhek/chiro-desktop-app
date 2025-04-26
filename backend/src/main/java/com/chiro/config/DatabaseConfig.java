@@ -5,10 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConfig {
-    private static final String DB_URL = "jdbc:sqlite:chiropractic.db";
+    private static final String DEFAULT_DB_URL = "jdbc:sqlite:chiropractic.db";
     private static DatabaseConfig instance;
+    private String dbUrl;
     
     private DatabaseConfig() {
+        this(DEFAULT_DB_URL);
+    }
+
+    private DatabaseConfig(String dbUrl) {
+        this.dbUrl = dbUrl;
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -22,8 +28,17 @@ public class DatabaseConfig {
         }
         return instance;
     }
+
+    public static DatabaseConfig getInstance(String dbUrl) {
+        if (instance == null) {
+            instance = new DatabaseConfig(dbUrl);
+        } else {
+            instance.dbUrl = dbUrl;
+        }
+        return instance;
+    }
     
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        return DriverManager.getConnection(dbUrl);
     }
 } 

@@ -15,6 +15,10 @@ public class RecordDAO {
         this.dbConfig = DatabaseConfig.getInstance();
     }
 
+    public RecordDAO(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
+
     public Record findById(int recordId) throws SQLException {
         String sql = "SELECT * FROM records WHERE RecordId = ?";
         try (Connection conn = dbConfig.getConnection();

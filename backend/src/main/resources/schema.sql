@@ -1,61 +1,54 @@
+-- Create Doctor table
+CREATE TABLE IF NOT EXISTS Doctor (
+    doctorId INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    specialization TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Patient table
+CREATE TABLE IF NOT EXISTS Patient (
+    patientId INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    dateOfBirth DATE,
+    address TEXT,
+    phone TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Appointment table
+CREATE TABLE IF NOT EXISTS Appointment (
+    appointmentId INTEGER PRIMARY KEY AUTOINCREMENT,
+    patientId INTEGER,
+    doctorId INTEGER,
+    appointmentDate TIMESTAMP NOT NULL,
+    status TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patientId) REFERENCES Patient(patientId),
+    FOREIGN KEY (doctorId) REFERENCES Doctor(doctorId)
+);
+
+-- Create Record table
+CREATE TABLE IF NOT EXISTS Record (
+    recordId INTEGER PRIMARY KEY AUTOINCREMENT,
+    appointmentId INTEGER,
+    visitDate DATE NOT NULL,
+    symptoms TEXT,
+    diagnosis TEXT,
+    nextVisitRecommendedDate DATE,
+    recordNotes TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointmentId) REFERENCES Appointment(appointmentId)
+);
+
 -- Create Insurance table
-CREATE TABLE IF NOT EXISTS insurance (
-    InsuranceID INTEGER PRIMARY KEY AUTOINCREMENT,
-    InsuranceProvider TEXT NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create Patients table
-CREATE TABLE IF NOT EXISTS patients (
-    PatientID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Name TEXT NOT NULL,
-    DateOfBirth DATE NOT NULL,
-    Email TEXT,
-    PhoneNumber TEXT,
-    InsuranceID INTEGER,
-    EmergencyContactName TEXT,
-    EmergencyContactPhone TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (InsuranceID) REFERENCES insurance(InsuranceID)
-);
-
--- Create Doctors table
-CREATE TABLE IF NOT EXISTS doctors (
-    DoctorID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Name TEXT NOT NULL,
-    Email TEXT,
-    PhoneNumber TEXT,
-    LicenseNumber TEXT NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create Appointments table
-CREATE TABLE IF NOT EXISTS appointments (
-    AppointmentID INTEGER PRIMARY KEY AUTOINCREMENT,
-    PatientID INTEGER NOT NULL,
-    DoctorID INTEGER NOT NULL,
-    ScheduledDateTime TIMESTAMP NOT NULL,
-    Status TEXT NOT NULL CHECK (Status IN ('Scheduled', 'Completed', 'Cancelled')),
-    AppointmentNotes TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (PatientID) REFERENCES patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES doctors(DoctorID)
-);
-
--- Create Records table
-CREATE TABLE IF NOT EXISTS records (
-    RecordID INTEGER PRIMARY KEY AUTOINCREMENT,
-    AppointmentID INTEGER NOT NULL,
-    VisitDate DATE NOT NULL,
-    Symptoms TEXT,
-    Diagnosis TEXT,
-    NextVisitRecommendedDate DATE,
-    RecordNotes TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (AppointmentID) REFERENCES appointments(AppointmentID)
+CREATE TABLE IF NOT EXISTS Insurance (
+    insuranceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    insuranceProvider TEXT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
