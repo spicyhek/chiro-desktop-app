@@ -21,7 +21,7 @@ public class RecordDAO {
     }
 
     public Record findById(String recordId) throws SQLException {
-        String sql = "SELECT * FROM records WHERE RecordId = ?";
+        String sql = "SELECT * FROM Record WHERE recordId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, recordId);
@@ -36,7 +36,7 @@ public class RecordDAO {
 
     public List<Record> findAll() throws SQLException {
         List<Record> records = new ArrayList<>();
-        String sql = "SELECT * FROM records";
+        String sql = "SELECT * FROM Record";
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -48,7 +48,7 @@ public class RecordDAO {
     }
 
     public void save(Record record) throws SQLException {
-        if (record.getRecordId() == null) {
+        if (record.getRecordId() == null || record.getRecordId().isEmpty()) {
             insert(record);
         } else {
             update(record);
@@ -56,55 +56,40 @@ public class RecordDAO {
     }
 
     private void insert(Record record) throws SQLException {
-        String sql = "INSERT INTO records (RecordId, AppointmentId, VisitDate, Symptoms, Diagnosis, " +
-                    "NextVisitRecommendedDate, RecordNotes, CreatedAt, UpdatedAt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "INSERT INTO Record (recordId, patientId, doctorId, appointmentId, visitDate, symptoms, " +
+                    "diagnosis, treatment, notes, nextVisitRecommendedDate, createdAt, updatedAt) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String recordId = UUID.randomUUID().toString();
-            record.setRecordId(recordId);
-            
-            stmt.setString(1, recordId);
-            stmt.setString(2, record.getAppointmentId());
-            stmt.setDate(3, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
-            stmt.setString(4, record.getSymptoms());
-            stmt.setString(5, record.getDiagnosis());
-            stmt.setDate(6, record.getNextVisitRecommendedDate() != null ? 
-                        Date.valueOf(record.getNextVisitRecommendedDate()) : null);
-            stmt.setString(7, record.getRecordNotes());
-            stmt.setTimestamp(8, Timestamp.valueOf(now));
-            stmt.setTimestamp(9, Timestamp.valueOf(now));
-            
+            record.setRecordId(UUID.randomUUID().toString());
+            setStatementParameters(stmt, record);
             stmt.executeUpdate();
         }
     }
 
     private void update(Record record) throws SQLException {
-        String sql = "UPDATE records SET AppointmentId = ?, VisitDate = ?, Symptoms = ?, " +
-                    "Diagnosis = ?, NextVisitRecommendedDate = ?, RecordNotes = ?, " +
-                    "UpdatedAt = ? WHERE RecordId = ?";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "UPDATE Record SET patientId = ?, doctorId = ?, appointmentId = ?, visitDate = ?, symptoms = ?, " +
+                    "diagnosis = ?, treatment = ?, notes = ?, nextVisitRecommendedDate = ?, updatedAt = ? " +
+                    "WHERE recordId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, record.getAppointmentId());
-            stmt.setDate(2, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
-            stmt.setString(3, record.getSymptoms());
-            stmt.setString(4, record.getDiagnosis());
-            stmt.setDate(5, record.getNextVisitRecommendedDate() != null ? 
-                        Date.valueOf(record.getNextVisitRecommendedDate()) : null);
-            stmt.setString(6, record.getRecordNotes());
-            stmt.setTimestamp(7, Timestamp.valueOf(now));
-            stmt.setString(8, record.getRecordId());
-            
+            stmt.setString(1, record.getPatientId());
+            stmt.setString(2, record.getDoctorId());
+            stmt.setString(3, record.getAppointmentId());
+            stmt.setDate(4, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
+            stmt.setString(5, record.getSymptoms());
+            stmt.setString(6, record.getDiagnosis());
+            stmt.setString(7, record.getTreatment());
+            stmt.setString(8, record.getNotes());
+            stmt.setDate(9, record.getNextVisitRecommendedDate() != null ? Date.valueOf(record.getNextVisitRecommendedDate()) : null);
+            stmt.setTimestamp(10, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(11, record.getRecordId());
             stmt.executeUpdate();
         }
     }
 
     public void delete(String recordId) throws SQLException {
-        String sql = "DELETE FROM records WHERE RecordId = ?";
+        String sql = "DELETE FROM Record WHERE recordId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, recordId);
@@ -114,26 +99,39 @@ public class RecordDAO {
 
     private Record mapResultSetToRecord(ResultSet rs) throws SQLException {
         Record record = new Record();
-        record.setRecordId(rs.getString("RecordId"));
-        record.setAppointmentId(rs.getString("AppointmentId"));
+        record.setRecordId(rs.getString("recordId"));
+        record.setPatientId(rs.getString("patientId"));
+        record.setDoctorId(rs.getString("doctorId"));
+        record.setAppointmentId(rs.getString("appointmentId"));
+        record.setVisitDate(rs.getDate("visitDate") != null ? rs.getDate("visitDate").toLocalDate() : null);
+        record.setSymptoms(rs.getString("symptoms"));
+        record.setDiagnosis(rs.getString("diagnosis"));
+        record.setTreatment(rs.getString("treatment"));
+        record.setNotes(rs.getString("notes"));
+        record.setNextVisitRecommendedDate(rs.getDate("nextVisitRecommendedDate") != null ? 
+            rs.getDate("nextVisitRecommendedDate").toLocalDate() : null);
         
-        Date visitDate = rs.getDate("VisitDate");
-        record.setVisitDate(visitDate != null ? visitDate.toLocalDate() : null);
-        
-        record.setSymptoms(rs.getString("Symptoms"));
-        record.setDiagnosis(rs.getString("Diagnosis"));
-        
-        Date nextVisitDate = rs.getDate("NextVisitRecommendedDate");
-        record.setNextVisitRecommendedDate(nextVisitDate != null ? nextVisitDate.toLocalDate() : null);
-        
-        record.setRecordNotes(rs.getString("RecordNotes"));
-        
-        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+        Timestamp createdAt = rs.getTimestamp("createdAt");
         record.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
-        Timestamp updatedAt = rs.getTimestamp("UpdatedAt");
+        Timestamp updatedAt = rs.getTimestamp("updatedAt");
         record.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
         
         return record;
+    }
+
+    private void setStatementParameters(PreparedStatement stmt, Record record) throws SQLException {
+        stmt.setString(1, record.getRecordId());
+        stmt.setString(2, record.getPatientId());
+        stmt.setString(3, record.getDoctorId());
+        stmt.setString(4, record.getAppointmentId());
+        stmt.setDate(5, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
+        stmt.setString(6, record.getSymptoms());
+        stmt.setString(7, record.getDiagnosis());
+        stmt.setString(8, record.getTreatment());
+        stmt.setString(9, record.getNotes());
+        stmt.setDate(10, record.getNextVisitRecommendedDate() != null ? Date.valueOf(record.getNextVisitRecommendedDate()) : null);
+        stmt.setTimestamp(11, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setTimestamp(12, Timestamp.valueOf(LocalDateTime.now()));
     }
 } 

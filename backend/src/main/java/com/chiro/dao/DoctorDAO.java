@@ -21,7 +21,7 @@ public class DoctorDAO {
     }
 
     public Doctor findById(String doctorId) throws SQLException {
-        String sql = "SELECT * FROM doctors WHERE DoctorId = ?";
+        String sql = "SELECT * FROM Doctor WHERE doctorId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, doctorId);
@@ -36,7 +36,7 @@ public class DoctorDAO {
 
     public List<Doctor> findAll() throws SQLException {
         List<Doctor> doctors = new ArrayList<>();
-        String sql = "SELECT * FROM doctors";
+        String sql = "SELECT * FROM Doctor";
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -56,45 +56,32 @@ public class DoctorDAO {
     }
 
     private void insert(Doctor doctor) throws SQLException {
-        String sql = "INSERT INTO doctors (DoctorId, Name, Specialization, LicenseNumber, CreatedAt, UpdatedAt) " +
+        String sql = "INSERT INTO Doctor (doctorId, name, specialization, licenseNumber, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, ?, ?, ?)";
-        LocalDateTime now = LocalDateTime.now();
-        
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String doctorId = UUID.randomUUID().toString();
-            doctor.setDoctorId(doctorId);
-            
-            stmt.setString(1, doctorId);
-            stmt.setString(2, doctor.getName());
-            stmt.setString(3, doctor.getSpecialization());
-            stmt.setString(4, doctor.getLicenseNumber());
-            stmt.setTimestamp(5, Timestamp.valueOf(now));
-            stmt.setTimestamp(6, Timestamp.valueOf(now));
-            
+            doctor.setDoctorId(UUID.randomUUID().toString());
+            setStatementParameters(stmt, doctor);
             stmt.executeUpdate();
         }
     }
 
     private void update(Doctor doctor) throws SQLException {
-        String sql = "UPDATE doctors SET Name = ?, Specialization = ?, LicenseNumber = ?, " +
-                    "UpdatedAt = ? WHERE DoctorId = ?";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "UPDATE Doctor SET name = ?, specialization = ?, licenseNumber = ?, updatedAt = ? " +
+                    "WHERE doctorId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, doctor.getName());
             stmt.setString(2, doctor.getSpecialization());
             stmt.setString(3, doctor.getLicenseNumber());
-            stmt.setTimestamp(4, Timestamp.valueOf(now));
+            stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(5, doctor.getDoctorId());
-            
             stmt.executeUpdate();
         }
     }
 
     public void delete(String doctorId) throws SQLException {
-        String sql = "DELETE FROM doctors WHERE DoctorId = ?";
+        String sql = "DELETE FROM Doctor WHERE doctorId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, doctorId);
@@ -104,17 +91,26 @@ public class DoctorDAO {
 
     private Doctor mapResultSetToDoctor(ResultSet rs) throws SQLException {
         Doctor doctor = new Doctor();
-        doctor.setDoctorId(rs.getString("DoctorId"));
-        doctor.setName(rs.getString("Name"));
-        doctor.setSpecialization(rs.getString("Specialization"));
-        doctor.setLicenseNumber(rs.getString("LicenseNumber"));
+        doctor.setDoctorId(rs.getString("doctorId"));
+        doctor.setName(rs.getString("name"));
+        doctor.setSpecialization(rs.getString("specialization"));
+        doctor.setLicenseNumber(rs.getString("licenseNumber"));
         
-        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+        Timestamp createdAt = rs.getTimestamp("createdAt");
         doctor.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
-        Timestamp updatedAt = rs.getTimestamp("UpdatedAt");
+        Timestamp updatedAt = rs.getTimestamp("updatedAt");
         doctor.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
         
         return doctor;
+    }
+
+    private void setStatementParameters(PreparedStatement stmt, Doctor doctor) throws SQLException {
+        stmt.setString(1, doctor.getDoctorId());
+        stmt.setString(2, doctor.getName());
+        stmt.setString(3, doctor.getSpecialization());
+        stmt.setString(4, doctor.getLicenseNumber());
+        stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
     }
 } 

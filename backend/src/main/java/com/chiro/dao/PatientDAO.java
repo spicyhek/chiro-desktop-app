@@ -21,7 +21,7 @@ public class PatientDAO {
     }
 
     public Patient findById(String patientId) throws SQLException {
-        String sql = "SELECT * FROM patients WHERE PatientId = ?";
+        String sql = "SELECT * FROM Patient WHERE patientId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, patientId);
@@ -36,7 +36,7 @@ public class PatientDAO {
 
     public List<Patient> findAll() throws SQLException {
         List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT * FROM patients";
+        String sql = "SELECT * FROM Patient";
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -56,36 +56,21 @@ public class PatientDAO {
     }
 
     private void insert(Patient patient) throws SQLException {
-        String sql = "INSERT INTO patients (PatientId, Name, DateOfBirth, Email, Phone, EmergencyContactName, " +
-                    "EmergencyContactPhone, CreatedAt, UpdatedAt) " +
+        String sql = "INSERT INTO Patient (patientId, name, dateOfBirth, email, phone, " +
+                    "emergencyContactName, emergencyContactPhone, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        LocalDateTime now = LocalDateTime.now();
-        
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String patientId = UUID.randomUUID().toString();
-            patient.setPatientId(patientId);
-            
-            stmt.setString(1, patientId);
-            stmt.setString(2, patient.getName());
-            stmt.setDate(3, patient.getDateOfBirth() != null ? Date.valueOf(patient.getDateOfBirth()) : null);
-            stmt.setString(4, patient.getEmail());
-            stmt.setString(5, patient.getPhone());
-            stmt.setString(6, patient.getEmergencyContactName());
-            stmt.setString(7, patient.getEmergencyContactPhone());
-            stmt.setTimestamp(8, Timestamp.valueOf(now));
-            stmt.setTimestamp(9, Timestamp.valueOf(now));
-            
+            patient.setPatientId(UUID.randomUUID().toString());
+            setStatementParameters(stmt, patient);
             stmt.executeUpdate();
         }
     }
 
     private void update(Patient patient) throws SQLException {
-        String sql = "UPDATE patients SET Name = ?, DateOfBirth = ?, Email = ?, Phone = ?, " +
-                    "EmergencyContactName = ?, EmergencyContactPhone = ?, UpdatedAt = ? " +
-                    "WHERE PatientId = ?";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "UPDATE Patient SET name = ?, dateOfBirth = ?, email = ?, phone = ?, " +
+                    "emergencyContactName = ?, emergencyContactPhone = ?, updatedAt = ? " +
+                    "WHERE patientId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, patient.getName());
@@ -94,15 +79,14 @@ public class PatientDAO {
             stmt.setString(4, patient.getPhone());
             stmt.setString(5, patient.getEmergencyContactName());
             stmt.setString(6, patient.getEmergencyContactPhone());
-            stmt.setTimestamp(7, Timestamp.valueOf(now));
+            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(8, patient.getPatientId());
-            
             stmt.executeUpdate();
         }
     }
 
     public void delete(String patientId) throws SQLException {
-        String sql = "DELETE FROM patients WHERE PatientId = ?";
+        String sql = "DELETE FROM Patient WHERE patientId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, patientId);
@@ -130,5 +114,17 @@ public class PatientDAO {
         patient.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
         
         return patient;
+    }
+
+    private void setStatementParameters(PreparedStatement stmt, Patient patient) throws SQLException {
+        stmt.setString(1, patient.getPatientId());
+        stmt.setString(2, patient.getName());
+        stmt.setDate(3, patient.getDateOfBirth() != null ? Date.valueOf(patient.getDateOfBirth()) : null);
+        stmt.setString(4, patient.getEmail());
+        stmt.setString(5, patient.getPhone());
+        stmt.setString(6, patient.getEmergencyContactName());
+        stmt.setString(7, patient.getEmergencyContactPhone());
+        stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
     }
 } 

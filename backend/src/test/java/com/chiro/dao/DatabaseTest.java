@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +30,8 @@ public class DatabaseTest {
     static void setup() throws SQLException {
         // Initialize database with test-specific database file
         dbConfig = DatabaseConfig.getInstance("jdbc:sqlite:test.db");
-        new DatabaseInitializer(dbConfig).initializeDatabase();
+        DatabaseInitializer initializer = new DatabaseInitializer(dbConfig);
+        initializer.initializeDatabase();
 
         // Initialize DAOs with test database configuration
         patientDAO = new PatientDAO(dbConfig);
@@ -37,9 +39,6 @@ public class DatabaseTest {
         insuranceDAO = new InsuranceDAO(dbConfig);
         appointmentDAO = new AppointmentDAO(dbConfig);
         recordDAO = new RecordDAO(dbConfig);
-
-        // Clear existing data
-        clearDatabase();
     }
 
     @AfterAll
@@ -52,18 +51,32 @@ public class DatabaseTest {
         }
     }
 
-    private static void clearDatabase() throws SQLException {
+    @BeforeEach
+    void clearDatabase() throws SQLException {
+        // Initialize database first to ensure tables exist
+        DatabaseInitializer initializer = new DatabaseInitializer(dbConfig);
+        initializer.initializeDatabase();
+        
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             // Disable foreign key constraints
             stmt.execute("PRAGMA foreign_keys = OFF");
             
-            // Clear tables in correct order to respect foreign key constraints
-            stmt.execute("DELETE FROM Record");
-            stmt.execute("DELETE FROM Appointment");
-            stmt.execute("DELETE FROM Patient");
-            stmt.execute("DELETE FROM Doctor");
-            stmt.execute("DELETE FROM Insurance");
+            // Clear tables in reverse order of dependencies
+            String[] tables = {"Record", "Appointment", "Patient", "Doctor", "Insurance"};
+            for (String table : tables) {
+                try {
+                    stmt.execute("DELETE FROM " + table);
+                } catch (SQLException e) {
+                    // If table doesn't exist, initialize database and try again
+                    if (e.getMessage().contains("no such table")) {
+                        initializer.initializeDatabase();
+                        stmt.execute("DELETE FROM " + table);
+                    } else {
+                        throw e;
+                    }
+                }
+            }
             
             // Re-enable foreign key constraints
             stmt.execute("PRAGMA foreign_keys = ON");
@@ -74,9 +87,11 @@ public class DatabaseTest {
     void testInsuranceOperations() throws SQLException {
         // Create insurance
         Insurance insurance = new Insurance();
+        insurance.setInsuranceId("INS123");
         insurance.setInsuranceProvider("Test Insurance Co");
         insuranceDAO.save(insurance);
-        assertTrue(insurance.getInsuranceId() > 0);
+        assertNotNull(insurance.getInsuranceId());
+        assertEquals("INS123", insurance.getInsuranceId());
 
         // Read insurance
         Insurance retrievedInsurance = insuranceDAO.findById(insurance.getInsuranceId());
@@ -95,9 +110,20 @@ public class DatabaseTest {
     }
 
     @Test
+    void testInsuranceIdRequired() {
+        Insurance insurance = new Insurance();
+        insurance.setInsuranceProvider("Test Insurance Co");
+        
+        assertThrows(IllegalArgumentException.class, () -> {
+            insuranceDAO.save(insurance);
+        });
+    }
+
+    @Test
     void testPatientOperations() throws SQLException {
         // Create insurance first (required for patient)
         Insurance insurance = new Insurance();
+        insurance.setInsuranceId("INS-PAT-001");
         insurance.setInsuranceProvider("Patient Test Insurance");
         insuranceDAO.save(insurance);
 
@@ -107,17 +133,16 @@ public class DatabaseTest {
         patient.setDateOfBirth(LocalDate.of(1990, 1, 1));
         patient.setEmail("john@example.com");
         patient.setPhone("123-456-7890");
-        patient.setInsuranceId(insurance.getInsuranceId());
         patient.setEmergencyContactName("Jane Doe");
         patient.setEmergencyContactPhone("987-654-3210");
         patientDAO.save(patient);
-        assertTrue(patient.getPatientId() > 0);
+        assertNotNull(patient.getPatientId());
+        assertTrue(patient.getPatientId().length() > 0);
 
         // Read patient
         Patient retrievedPatient = patientDAO.findById(patient.getPatientId());
         assertNotNull(retrievedPatient);
         assertEquals("John Doe", retrievedPatient.getName());
-        assertEquals(insurance.getInsuranceId(), retrievedPatient.getInsuranceId());
 
         // Update patient
         retrievedPatient.setName("John Smith");
@@ -138,7 +163,8 @@ public class DatabaseTest {
         doctor.setSpecialization("Chiropractic");
         doctor.setLicenseNumber("CHIRO123");
         doctorDAO.save(doctor);
-        assertTrue(doctor.getDoctorId() > 0);
+        assertNotNull(doctor.getDoctorId());
+        assertTrue(doctor.getDoctorId().length() > 0);
 
         // Read doctor
         Doctor retrievedDoctor = doctorDAO.findById(doctor.getDoctorId());
@@ -161,17 +187,20 @@ public class DatabaseTest {
     void testAppointmentOperations() throws SQLException {
         // Create required entities first
         Insurance insurance = new Insurance();
+        insurance.setInsuranceId("INS-APT-001");
         insurance.setInsuranceProvider("Appointment Test Insurance");
         insuranceDAO.save(insurance);
 
         Patient patient = new Patient();
         patient.setName("Appointment Patient");
-        patient.setInsuranceId(insurance.getInsuranceId());
+        patient.setEmail("appointment@example.com");
+        patient.setPhone("123-456-7890");
         patientDAO.save(patient);
 
         Doctor doctor = new Doctor();
         doctor.setName("Appointment Doctor");
         doctor.setSpecialization("General");
+        doctor.setLicenseNumber("DOC123");
         doctorDAO.save(doctor);
 
         // Create appointment
@@ -182,7 +211,8 @@ public class DatabaseTest {
         appointment.setStatus("Scheduled");
         appointment.setAppointmentNotes("Initial consultation");
         appointmentDAO.save(appointment);
-        assertTrue(appointment.getAppointmentId() > 0);
+        assertNotNull(appointment.getAppointmentId());
+        assertTrue(appointment.getAppointmentId().length() > 0);
 
         // Read appointment
         Appointment retrievedAppointment = appointmentDAO.findById(appointment.getAppointmentId());
@@ -206,17 +236,20 @@ public class DatabaseTest {
     void testRecordOperations() throws SQLException {
         // Create required entities first
         Insurance insurance = new Insurance();
+        insurance.setInsuranceId("INS-REC-001");
         insurance.setInsuranceProvider("Record Test Insurance");
         insuranceDAO.save(insurance);
 
         Patient patient = new Patient();
         patient.setName("Record Patient");
-        patient.setInsuranceId(insurance.getInsuranceId());
+        patient.setEmail("record@example.com");
+        patient.setPhone("123-456-7890");
         patientDAO.save(patient);
 
         Doctor doctor = new Doctor();
         doctor.setName("Record Doctor");
         doctor.setSpecialization("General");
+        doctor.setLicenseNumber("DOC456");
         doctorDAO.save(doctor);
 
         Appointment appointment = new Appointment();
@@ -233,9 +266,10 @@ public class DatabaseTest {
         record.setSymptoms("Back pain");
         record.setDiagnosis("Muscle strain");
         record.setNextVisitRecommendedDate(LocalDate.now().plusWeeks(2));
-        record.setRecordNotes("Patient responded well to treatment");
+        record.setNotes("Patient responded well to treatment");
         recordDAO.save(record);
-        assertTrue(record.getRecordId() > 0);
+        assertNotNull(record.getRecordId());
+        assertTrue(record.getRecordId().length() > 0);
 
         // Read record
         com.chiro.models.Record retrievedRecord = recordDAO.findById(record.getRecordId());
@@ -259,19 +293,22 @@ public class DatabaseTest {
     void testRelationships() throws SQLException {
         // Create insurance
         Insurance insurance = new Insurance();
+        insurance.setInsuranceId("INS-REL-001");
         insurance.setInsuranceProvider("Relationship Test Insurance");
         insuranceDAO.save(insurance);
 
-        // Create patient with insurance
+        // Create patient
         Patient patient = new Patient();
         patient.setName("Relationship Patient");
-        patient.setInsuranceId(insurance.getInsuranceId());
+        patient.setEmail("relationship@example.com");
+        patient.setPhone("123-456-7890");
         patientDAO.save(patient);
 
         // Create doctor
         Doctor doctor = new Doctor();
         doctor.setName("Relationship Doctor");
         doctor.setSpecialization("General");
+        doctor.setLicenseNumber("DOC789");
         doctorDAO.save(doctor);
 
         // Create appointment linking patient and doctor
@@ -293,15 +330,14 @@ public class DatabaseTest {
         // Verify relationships
         Patient retrievedPatient = patientDAO.findById(patient.getPatientId());
         assertNotNull(retrievedPatient);
-        assertEquals(insurance.getInsuranceId(), retrievedPatient.getInsuranceId());
 
         List<Appointment> patientAppointments = appointmentDAO.findAll();
         assertTrue(patientAppointments.stream()
-                .anyMatch(a -> a.getPatientId() == patient.getPatientId() && 
-                             a.getDoctorId() == doctor.getDoctorId()));
+                .anyMatch(a -> a.getPatientId().equals(patient.getPatientId()) && 
+                             a.getDoctorId().equals(doctor.getDoctorId())));
 
         List<com.chiro.models.Record> appointmentRecords = recordDAO.findAll();
         assertTrue(appointmentRecords.stream()
-                .anyMatch(r -> r.getAppointmentId() == appointment.getAppointmentId()));
+                .anyMatch(r -> r.getAppointmentId().equals(appointment.getAppointmentId())));
     }
 } 

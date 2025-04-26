@@ -29,10 +29,15 @@ public class DatabaseInitializer {
              Statement stmt = conn.createStatement()) {
             
             // Read the schema.sql file
-            String schemaSql = readResourceFile("/schema.sql");
+            String schemaSql = readResourceFile("schema.sql");
             
-            // Execute the schema
-            stmt.execute(schemaSql);
+            // Split the SQL into individual statements and execute each one
+            for (String sql : schemaSql.split(";")) {
+                sql = sql.trim();
+                if (!sql.isEmpty()) {
+                    stmt.execute(sql);
+                }
+            }
             
             logger.info("Database initialized successfully");
         } catch (Exception e) {
@@ -42,8 +47,11 @@ public class DatabaseInitializer {
     }
 
     private String readResourceFile(String resourcePath) {
-        try (InputStream is = getClass().getResourceAsStream(resourcePath);
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
              BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            if (is == null) {
+                throw new RuntimeException("Resource not found: " + resourcePath);
+            }
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
             throw new RuntimeException("Failed to read resource file: " + resourcePath, e);

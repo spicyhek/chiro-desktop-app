@@ -19,11 +19,11 @@ public class InsuranceDAO {
         this.dbConfig = dbConfig;
     }
 
-    public Insurance findById(int insuranceId) throws SQLException {
-        String sql = "SELECT * FROM insurance WHERE InsuranceId = ?";
+    public Insurance findById(String insuranceId) throws SQLException {
+        String sql = "SELECT * FROM Insurance WHERE insuranceId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, insuranceId);
+            stmt.setString(1, insuranceId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToInsurance(rs);
@@ -34,20 +34,24 @@ public class InsuranceDAO {
     }
 
     public List<Insurance> findAll() throws SQLException {
-        List<Insurance> insuranceList = new ArrayList<>();
-        String sql = "SELECT * FROM insurance";
+        List<Insurance> insurances = new ArrayList<>();
+        String sql = "SELECT * FROM Insurance";
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                insuranceList.add(mapResultSetToInsurance(rs));
+                insurances.add(mapResultSetToInsurance(rs));
             }
         }
-        return insuranceList;
+        return insurances;
     }
 
     public void save(Insurance insurance) throws SQLException {
-        if (insurance.getInsuranceId() == 0) {
+        if (insurance.getInsuranceId() == null || insurance.getInsuranceId().isEmpty()) {
+            throw new IllegalArgumentException("Insurance ID must be provided");
+        }
+        
+        if (findById(insurance.getInsuranceId()) == null) {
             insert(insurance);
         } else {
             update(insurance);
@@ -55,59 +59,53 @@ public class InsuranceDAO {
     }
 
     private void insert(Insurance insurance) throws SQLException {
-        String sql = "INSERT INTO insurance (InsuranceProvider, CreatedAt, UpdatedAt) VALUES (?, ?, ?)";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "INSERT INTO Insurance (insuranceId, insuranceProvider, createdAt, updatedAt) " +
+                    "VALUES (?, ?, ?, ?)";
         try (Connection conn = dbConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, insurance.getInsuranceProvider());
-            stmt.setTimestamp(2, Timestamp.valueOf(now));
-            stmt.setTimestamp(3, Timestamp.valueOf(now));
-            
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            setStatementParameters(stmt, insurance);
             stmt.executeUpdate();
-            
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    insurance.setInsuranceId(rs.getInt(1));
-                }
-            }
         }
     }
 
     private void update(Insurance insurance) throws SQLException {
-        String sql = "UPDATE insurance SET InsuranceProvider = ?, UpdatedAt = ? WHERE InsuranceId = ?";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "UPDATE Insurance SET insuranceProvider = ?, updatedAt = ? WHERE insuranceId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, insurance.getInsuranceProvider());
-            stmt.setTimestamp(2, Timestamp.valueOf(now));
-            stmt.setInt(3, insurance.getInsuranceId());
-            
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(3, insurance.getInsuranceId());
             stmt.executeUpdate();
         }
     }
 
-    public void delete(int insuranceId) throws SQLException {
-        String sql = "DELETE FROM insurance WHERE InsuranceId = ?";
+    public void delete(String insuranceId) throws SQLException {
+        String sql = "DELETE FROM Insurance WHERE insuranceId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, insuranceId);
+            stmt.setString(1, insuranceId);
             stmt.executeUpdate();
         }
     }
 
     private Insurance mapResultSetToInsurance(ResultSet rs) throws SQLException {
         Insurance insurance = new Insurance();
-        insurance.setInsuranceId(rs.getInt("InsuranceId"));
-        insurance.setInsuranceProvider(rs.getString("InsuranceProvider"));
+        insurance.setInsuranceId(rs.getString("insuranceId"));
+        insurance.setInsuranceProvider(rs.getString("insuranceProvider"));
         
-        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+        Timestamp createdAt = rs.getTimestamp("createdAt");
         insurance.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
-        Timestamp updatedAt = rs.getTimestamp("UpdatedAt");
+        Timestamp updatedAt = rs.getTimestamp("updatedAt");
         insurance.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
         
         return insurance;
+    }
+
+    private void setStatementParameters(PreparedStatement stmt, Insurance insurance) throws SQLException {
+        stmt.setString(1, insurance.getInsuranceId());
+        stmt.setString(2, insurance.getInsuranceProvider());
+        stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
     }
 } 

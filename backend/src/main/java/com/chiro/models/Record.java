@@ -5,12 +5,15 @@ import java.time.LocalDateTime;
 
 public class Record {
     private String recordId;
+    private String patientId;
+    private String doctorId;
     private String appointmentId;
     private LocalDate visitDate;
     private String symptoms;
     private String diagnosis;
+    private String treatment;
+    private String notes;
     private LocalDate nextVisitRecommendedDate;
-    private String recordNotes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -18,16 +21,20 @@ public class Record {
     public Record() {}
 
     // Constructor with all fields
-    public Record(String recordId, String appointmentId, LocalDate visitDate, String symptoms,
-                 String diagnosis, LocalDate nextVisitRecommendedDate, String recordNotes,
+    public Record(String recordId, String patientId, String doctorId, String appointmentId,
+                 LocalDate visitDate, String symptoms, String diagnosis, String treatment,
+                 String notes, LocalDate nextVisitRecommendedDate,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.recordId = recordId;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
         this.appointmentId = appointmentId;
         this.visitDate = visitDate;
         this.symptoms = symptoms;
         this.diagnosis = diagnosis;
+        this.treatment = treatment;
+        this.notes = notes;
         this.nextVisitRecommendedDate = nextVisitRecommendedDate;
-        this.recordNotes = recordNotes;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -39,6 +46,22 @@ public class Record {
 
     public void setRecordId(String recordId) {
         this.recordId = recordId;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
+    public String getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
     }
 
     public String getAppointmentId() {
@@ -73,20 +96,28 @@ public class Record {
         this.diagnosis = diagnosis;
     }
 
+    public String getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(String treatment) {
+        this.treatment = treatment;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public LocalDate getNextVisitRecommendedDate() {
         return nextVisitRecommendedDate;
     }
 
     public void setNextVisitRecommendedDate(LocalDate nextVisitRecommendedDate) {
         this.nextVisitRecommendedDate = nextVisitRecommendedDate;
-    }
-
-    public String getRecordNotes() {
-        return recordNotes;
-    }
-
-    public void setRecordNotes(String recordNotes) {
-        this.recordNotes = recordNotes;
     }
 
     public LocalDateTime getCreatedAt() {

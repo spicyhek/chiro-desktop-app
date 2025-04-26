@@ -21,7 +21,7 @@ public class AppointmentDAO {
     }
 
     public Appointment findById(String appointmentId) throws SQLException {
-        String sql = "SELECT * FROM appointments WHERE AppointmentId = ?";
+        String sql = "SELECT * FROM Appointment WHERE appointmentId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, appointmentId);
@@ -36,7 +36,7 @@ public class AppointmentDAO {
 
     public List<Appointment> findAll() throws SQLException {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT * FROM appointments";
+        String sql = "SELECT * FROM Appointment";
         try (Connection conn = dbConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -56,33 +56,19 @@ public class AppointmentDAO {
     }
 
     private void insert(Appointment appointment) throws SQLException {
-        String sql = "INSERT INTO appointments (AppointmentId, PatientId, DoctorId, ScheduledDateTime, Status, " +
-                    "AppointmentNotes, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "INSERT INTO Appointment (appointmentId, patientId, doctorId, scheduledDateTime, " +
+                    "status, appointmentNotes, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String appointmentId = UUID.randomUUID().toString();
-            appointment.setAppointmentId(appointmentId);
-            
-            stmt.setString(1, appointmentId);
-            stmt.setString(2, appointment.getPatientId());
-            stmt.setString(3, appointment.getDoctorId());
-            stmt.setTimestamp(4, Timestamp.valueOf(appointment.getScheduledDateTime()));
-            stmt.setString(5, appointment.getStatus());
-            stmt.setString(6, appointment.getAppointmentNotes());
-            stmt.setTimestamp(7, Timestamp.valueOf(now));
-            stmt.setTimestamp(8, Timestamp.valueOf(now));
-            
+            appointment.setAppointmentId(UUID.randomUUID().toString());
+            setStatementParameters(stmt, appointment);
             stmt.executeUpdate();
         }
     }
 
     private void update(Appointment appointment) throws SQLException {
-        String sql = "UPDATE appointments SET PatientId = ?, DoctorId = ?, ScheduledDateTime = ?, " +
-                    "Status = ?, AppointmentNotes = ?, UpdatedAt = ? WHERE AppointmentId = ?";
-        LocalDateTime now = LocalDateTime.now();
-        
+        String sql = "UPDATE Appointment SET patientId = ?, doctorId = ?, scheduledDateTime = ?, " +
+                    "status = ?, appointmentNotes = ?, updatedAt = ? WHERE appointmentId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, appointment.getPatientId());
@@ -90,15 +76,14 @@ public class AppointmentDAO {
             stmt.setTimestamp(3, Timestamp.valueOf(appointment.getScheduledDateTime()));
             stmt.setString(4, appointment.getStatus());
             stmt.setString(5, appointment.getAppointmentNotes());
-            stmt.setTimestamp(6, Timestamp.valueOf(now));
+            stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(7, appointment.getAppointmentId());
-            
             stmt.executeUpdate();
         }
     }
 
     public void delete(String appointmentId) throws SQLException {
-        String sql = "DELETE FROM appointments WHERE AppointmentId = ?";
+        String sql = "DELETE FROM Appointment WHERE appointmentId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, appointmentId);
@@ -108,22 +93,33 @@ public class AppointmentDAO {
 
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
         Appointment appointment = new Appointment();
-        appointment.setAppointmentId(rs.getString("AppointmentId"));
-        appointment.setPatientId(rs.getString("PatientId"));
-        appointment.setDoctorId(rs.getString("DoctorId"));
+        appointment.setAppointmentId(rs.getString("appointmentId"));
+        appointment.setPatientId(rs.getString("patientId"));
+        appointment.setDoctorId(rs.getString("doctorId"));
         
-        Timestamp scheduledDateTime = rs.getTimestamp("ScheduledDateTime");
+        Timestamp scheduledDateTime = rs.getTimestamp("scheduledDateTime");
         appointment.setScheduledDateTime(scheduledDateTime != null ? scheduledDateTime.toLocalDateTime() : null);
         
-        appointment.setStatus(rs.getString("Status"));
-        appointment.setAppointmentNotes(rs.getString("AppointmentNotes"));
+        appointment.setStatus(rs.getString("status"));
+        appointment.setAppointmentNotes(rs.getString("appointmentNotes"));
         
-        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+        Timestamp createdAt = rs.getTimestamp("createdAt");
         appointment.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
-        Timestamp updatedAt = rs.getTimestamp("UpdatedAt");
+        Timestamp updatedAt = rs.getTimestamp("updatedAt");
         appointment.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
         
         return appointment;
+    }
+
+    private void setStatementParameters(PreparedStatement stmt, Appointment appointment) throws SQLException {
+        stmt.setString(1, appointment.getAppointmentId());
+        stmt.setString(2, appointment.getPatientId());
+        stmt.setString(3, appointment.getDoctorId());
+        stmt.setTimestamp(4, Timestamp.valueOf(appointment.getScheduledDateTime()));
+        stmt.setString(5, appointment.getStatus());
+        stmt.setString(6, appointment.getAppointmentNotes());
+        stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
     }
 } 

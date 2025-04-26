@@ -38,15 +38,20 @@ CREATE TABLE IF NOT EXISTS Appointment (
 -- Create Record table
 CREATE TABLE IF NOT EXISTS Record (
     recordId TEXT PRIMARY KEY,
+    patientId TEXT,
+    doctorId TEXT,
     appointmentId TEXT,
     visitDate DATE NOT NULL,
     symptoms TEXT,
     diagnosis TEXT,
+    treatment TEXT,
+    notes TEXT,
     nextVisitRecommendedDate DATE,
-    recordNotes TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (appointmentId) REFERENCES Appointment(appointmentId)
+    FOREIGN KEY (appointmentId) REFERENCES Appointment(appointmentId),
+    FOREIGN KEY (patientId) REFERENCES Patient(patientId),
+    FOREIGN KEY (doctorId) REFERENCES Doctor(doctorId)
 );
 
 -- Create Insurance table
