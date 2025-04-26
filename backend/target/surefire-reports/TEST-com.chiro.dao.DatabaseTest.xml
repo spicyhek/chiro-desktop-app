@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.chiro.dao.DatabaseTest" time="0.68" tests="7" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.chiro.dao.DatabaseTest" time="0.566" tests="7" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
-    <property name="java.class.path" value="C:\Users\Laser\db\chiro-desktop-app\backend\target\test-classes;C:\Users\Laser\db\chiro-desktop-app\backend\target\classes;C:\Users\Laser\.m2\repository\org\xerial\sqlite-jdbc\3.45.1.0\sqlite-jdbc-3.45.1.0.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\Laser\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\Laser\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-simple\2.0.12\slf4j-simple-2.0.12.jar;"/>
+    <property name="java.class.path" value="C:\Users\Laser\db\chiro-desktop-app\backend\target\test-classes;C:\Users\Laser\db\chiro-desktop-app\backend\target\classes;C:\Users\Laser\.m2\repository\org\xerial\sqlite-jdbc\3.45.1.0\sqlite-jdbc-3.45.1.0.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\Laser\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\Laser\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
@@ -15,9 +15,9 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-17.0.5\bin"/>
-    <property name="sun.java.command" value="C:\Users\Laser\AppData\Local\Temp\surefire17119420961303305114\surefirebooter-20250425224731428_3.jar C:\Users\Laser\AppData\Local\Temp\surefire17119420961303305114 2025-04-25T22-47-31_277-jvmRun1 surefire-20250425224731428_1tmp surefire_0-20250425224731428_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\Laser\AppData\Local\Temp\surefire3547709712868101966\surefirebooter-20250425225654201_3.jar C:\Users\Laser\AppData\Local\Temp\surefire3547709712868101966 2025-04-25T22-56-54_065-jvmRun1 surefire-20250425225654201_1tmp surefire_0-20250425225654201_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="C:\Users\Laser\db\chiro-desktop-app\backend\target\test-classes;C:\Users\Laser\db\chiro-desktop-app\backend\target\classes;C:\Users\Laser\.m2\repository\org\xerial\sqlite-jdbc\3.45.1.0\sqlite-jdbc-3.45.1.0.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\Laser\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\Laser\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-simple\2.0.12\slf4j-simple-2.0.12.jar;"/>
+    <property name="surefire.test.class.path" value="C:\Users\Laser\db\chiro-desktop-app\backend\target\test-classes;C:\Users\Laser\db\chiro-desktop-app\backend\target\classes;C:\Users\Laser\.m2\repository\org\xerial\sqlite-jdbc\3.45.1.0\sqlite-jdbc-3.45.1.0.jar;C:\Users\Laser\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter\5.8.2\junit-jupiter-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.8.2\junit-jupiter-api-5.8.2.jar;C:\Users\Laser\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-commons\1.8.2\junit-platform-commons-1.8.2.jar;C:\Users\Laser\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.8.2\junit-jupiter-params-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.8.2\junit-jupiter-engine-5.8.2.jar;C:\Users\Laser\.m2\repository\org\junit\platform\junit-platform-engine\1.8.2\junit-platform-engine-1.8.2.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="C:\Users\Laser"/>
     <property name="user.language" value="en"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\Laser\AppData\Local\Temp\surefire17119420961303305114\surefirebooter-20250425224731428_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Laser\AppData\Local\Temp\surefire3547709712868101966\surefirebooter-20250425225654201_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.5+9-LTS-191"/>
@@ -56,33 +56,164 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testRelationships" classname="com.chiro.dao.DatabaseTest" time="0.079">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
+  <testcase name="testRelationships" classname="com.chiro.dao.DatabaseTest" time="0.082">
+    <system-out><![CDATA[
+=== Setting up test environment ===
+Database initialized successfully
+=== Test environment setup complete ===
+
+
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+]]></system-out>
+    <system-err><![CDATA[SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 ]]></system-err>
   </testcase>
   <testcase name="testAppointmentOperations" classname="com.chiro.dao.DatabaseTest" time="0.057">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+
+=== Testing Appointment Operations ===
+Creating required entities...
+Created insurance with ID: INS-APT-001
+Created patient with ID: f1ab8c7d-bc35-4d13-b667-876705192f30
+Created doctor with ID: dcacf614-9307-4f61-a90e-b8ffb3ee27df
+Creating new appointment...
+Created appointment with ID: 5e501250-444a-421e-8ccf-e824336ae5eb
+Reading appointment record...
+Retrieved appointment status: Scheduled
+Updating appointment record...
+Updated appointment status: Completed
+Deleting appointment record...
+Appointment record deleted successfully
+=== Appointment Operations Test Complete ===
+
+]]></system-out>
   </testcase>
-  <testcase name="testPatientOperations" classname="com.chiro.dao.DatabaseTest" time="0.042">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+  <testcase name="testPatientOperations" classname="com.chiro.dao.DatabaseTest" time="0.046">
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+
+=== Testing Patient Operations ===
+Creating insurance for patient...
+Created insurance with ID: INS-PAT-001
+Creating new patient record...
+Created patient with ID: 27bdb6ec-2cbe-45ec-befe-cc0ba1be9731
+Reading patient record...
+Retrieved patient name: John Doe
+Updating patient record...
+Updated patient name: John Smith
+Deleting patient record...
+Patient record deleted successfully
+=== Patient Operations Test Complete ===
+
+]]></system-out>
   </testcase>
-  <testcase name="testInsuranceOperations" classname="com.chiro.dao.DatabaseTest" time="0.059">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+  <testcase name="testInsuranceOperations" classname="com.chiro.dao.DatabaseTest" time="0.041">
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+
+=== Testing Insurance Operations ===
+Creating new insurance record...
+Created insurance with ID: INS123
+Reading insurance record...
+Retrieved insurance provider: Test Insurance Co
+Updating insurance record...
+Updated insurance provider: Updated Insurance Co
+Deleting insurance record...
+Insurance record deleted successfully
+=== Insurance Operations Test Complete ===
+
+]]></system-out>
   </testcase>
-  <testcase name="testInsuranceIdRequired" classname="com.chiro.dao.DatabaseTest" time="0.114">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+  <testcase name="testInsuranceIdRequired" classname="com.chiro.dao.DatabaseTest" time="0.02">
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+
+=== Testing Insurance ID Requirement ===
+Attempting to save insurance without ID...
+Expected exception thrown: Insurance ID is required
+=== Insurance ID Requirement Test Complete ===
+
+]]></system-out>
   </testcase>
-  <testcase name="testDoctorOperations" classname="com.chiro.dao.DatabaseTest" time="0.034">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+  <testcase name="testDoctorOperations" classname="com.chiro.dao.DatabaseTest" time="0.04">
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+
+=== Testing Doctor Operations ===
+Creating new doctor record...
+Created doctor with ID: 0e163a4f-eeec-4695-bda3-91447a1ba6c8
+Reading doctor record...
+Retrieved doctor: Dr. Smith - Chiropractic
+Updating doctor record...
+Updated doctor specialization: Sports Medicine
+Deleting doctor record...
+Doctor record deleted successfully
+=== Doctor Operations Test Complete ===
+
+]]></system-out>
   </testcase>
   <testcase name="testRecordOperations" classname="com.chiro.dao.DatabaseTest" time="0.056">
-    <system-err><![CDATA[[main] INFO com.chiro.util.DatabaseInitializer - Database initialized successfully
-]]></system-err>
+    <system-out><![CDATA[
+--- Clearing database for new test ---
+Database initialized successfully
+Cleared table: Record
+Cleared table: Appointment
+Cleared table: Patient
+Cleared table: Doctor
+Cleared table: Insurance
+--- Database cleared ---
+
+]]></system-out>
   </testcase>
 </testsuite>
