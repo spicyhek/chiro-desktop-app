@@ -16,7 +16,7 @@ node_modules
 *.rar
 
 # Maven
-target/
+backend/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
