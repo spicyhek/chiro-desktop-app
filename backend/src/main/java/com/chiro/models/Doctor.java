@@ -3,7 +3,7 @@ package com.chiro.models;
 import java.time.LocalDateTime;
 
 public class Doctor {
-    private int doctorId;
+    private String doctorId;
     private String name;
     private String specialization;
     private String licenseNumber;
@@ -14,7 +14,7 @@ public class Doctor {
     public Doctor() {}
 
     // Constructor with all fields
-    public Doctor(int doctorId, String name, String specialization, String licenseNumber, 
+    public Doctor(String doctorId, String name, String specialization, String licenseNumber, 
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.doctorId = doctorId;
         this.name = name;
@@ -25,11 +25,11 @@ public class Doctor {
     }
 
     // Getters and Setters
-    public int getDoctorId() {
+    public String getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(int doctorId) {
+    public void setDoctorId(String doctorId) {
         this.doctorId = doctorId;
     }
 

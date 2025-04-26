@@ -7,6 +7,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class RecordDAO {
     private final DatabaseConfig dbConfig;
@@ -19,11 +20,11 @@ public class RecordDAO {
         this.dbConfig = dbConfig;
     }
 
-    public Record findById(int recordId) throws SQLException {
+    public Record findById(String recordId) throws SQLException {
         String sql = "SELECT * FROM records WHERE RecordId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, recordId);
+            stmt.setString(1, recordId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToRecord(rs);
@@ -47,7 +48,7 @@ public class RecordDAO {
     }
 
     public void save(Record record) throws SQLException {
-        if (record.getRecordId() == 0) {
+        if (record.getRecordId() == null) {
             insert(record);
         } else {
             update(record);
@@ -55,30 +56,28 @@ public class RecordDAO {
     }
 
     private void insert(Record record) throws SQLException {
-        String sql = "INSERT INTO records (AppointmentId, VisitDate, Symptoms, Diagnosis, " +
+        String sql = "INSERT INTO records (RecordId, AppointmentId, VisitDate, Symptoms, Diagnosis, " +
                     "NextVisitRecommendedDate, RecordNotes, CreatedAt, UpdatedAt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         LocalDateTime now = LocalDateTime.now();
         
         try (Connection conn = dbConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, record.getAppointmentId());
-            stmt.setDate(2, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
-            stmt.setString(3, record.getSymptoms());
-            stmt.setString(4, record.getDiagnosis());
-            stmt.setDate(5, record.getNextVisitRecommendedDate() != null ? 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String recordId = UUID.randomUUID().toString();
+            record.setRecordId(recordId);
+            
+            stmt.setString(1, recordId);
+            stmt.setString(2, record.getAppointmentId());
+            stmt.setDate(3, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
+            stmt.setString(4, record.getSymptoms());
+            stmt.setString(5, record.getDiagnosis());
+            stmt.setDate(6, record.getNextVisitRecommendedDate() != null ? 
                         Date.valueOf(record.getNextVisitRecommendedDate()) : null);
-            stmt.setString(6, record.getRecordNotes());
-            stmt.setTimestamp(7, Timestamp.valueOf(now));
+            stmt.setString(7, record.getRecordNotes());
             stmt.setTimestamp(8, Timestamp.valueOf(now));
+            stmt.setTimestamp(9, Timestamp.valueOf(now));
             
             stmt.executeUpdate();
-            
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    record.setRecordId(rs.getInt(1));
-                }
-            }
         }
     }
 
@@ -90,7 +89,7 @@ public class RecordDAO {
         
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, record.getAppointmentId());
+            stmt.setString(1, record.getAppointmentId());
             stmt.setDate(2, record.getVisitDate() != null ? Date.valueOf(record.getVisitDate()) : null);
             stmt.setString(3, record.getSymptoms());
             stmt.setString(4, record.getDiagnosis());
@@ -98,25 +97,25 @@ public class RecordDAO {
                         Date.valueOf(record.getNextVisitRecommendedDate()) : null);
             stmt.setString(6, record.getRecordNotes());
             stmt.setTimestamp(7, Timestamp.valueOf(now));
-            stmt.setInt(8, record.getRecordId());
+            stmt.setString(8, record.getRecordId());
             
             stmt.executeUpdate();
         }
     }
 
-    public void delete(int recordId) throws SQLException {
+    public void delete(String recordId) throws SQLException {
         String sql = "DELETE FROM records WHERE RecordId = ?";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, recordId);
+            stmt.setString(1, recordId);
             stmt.executeUpdate();
         }
     }
 
     private Record mapResultSetToRecord(ResultSet rs) throws SQLException {
         Record record = new Record();
-        record.setRecordId(rs.getInt("RecordId"));
-        record.setAppointmentId(rs.getInt("AppointmentId"));
+        record.setRecordId(rs.getString("RecordId"));
+        record.setAppointmentId(rs.getString("AppointmentId"));
         
         Date visitDate = rs.getDate("VisitDate");
         record.setVisitDate(visitDate != null ? visitDate.toLocalDate() : null);

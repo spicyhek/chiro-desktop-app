@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Patient {
-    private int patientId;
+    private String patientId;
     private String name;
     private LocalDate dateOfBirth;
     private String email;
@@ -19,7 +19,7 @@ public class Patient {
     public Patient() {}
 
     // Constructor with all fields
-    public Patient(int patientId, String name, LocalDate dateOfBirth, String email, 
+    public Patient(String patientId, String name, LocalDate dateOfBirth, String email, 
                   String phone, Integer insuranceId, String emergencyContactName,
                   String emergencyContactPhone, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.patientId = patientId;
@@ -35,11 +35,11 @@ public class Patient {
     }
 
     // Getters and Setters
-    public int getPatientId() {
+    public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(int patientId) {
+    public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
 

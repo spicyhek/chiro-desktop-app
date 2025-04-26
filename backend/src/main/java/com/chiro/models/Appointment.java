@@ -3,9 +3,9 @@ package com.chiro.models;
 import java.time.LocalDateTime;
 
 public class Appointment {
-    private int appointmentId;
-    private int patientId;
-    private int doctorId;
+    private String appointmentId;
+    private String patientId;
+    private String doctorId;
     private LocalDateTime scheduledDateTime;
     private String status;
     private String appointmentNotes;
@@ -16,7 +16,7 @@ public class Appointment {
     public Appointment() {}
 
     // Constructor with all fields
-    public Appointment(int appointmentId, int patientId, int doctorId, LocalDateTime scheduledDateTime,
+    public Appointment(String appointmentId, String patientId, String doctorId, LocalDateTime scheduledDateTime,
                       String status, String appointmentNotes, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
@@ -29,27 +29,27 @@ public class Appointment {
     }
 
     // Getters and Setters
-    public int getAppointmentId() {
+    public String getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(int appointmentId) {
+    public void setAppointmentId(String appointmentId) {
         this.appointmentId = appointmentId;
     }
 
-    public int getPatientId() {
+    public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(int patientId) {
+    public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
 
-    public int getDoctorId() {
+    public String getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(int doctorId) {
+    public void setDoctorId(String doctorId) {
         this.doctorId = doctorId;
     }
 

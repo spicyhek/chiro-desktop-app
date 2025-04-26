@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Record {
-    private int recordId;
-    private int appointmentId;
+    private String recordId;
+    private String appointmentId;
     private LocalDate visitDate;
     private String symptoms;
     private String diagnosis;
@@ -18,7 +18,7 @@ public class Record {
     public Record() {}
 
     // Constructor with all fields
-    public Record(int recordId, int appointmentId, LocalDate visitDate, String symptoms,
+    public Record(String recordId, String appointmentId, LocalDate visitDate, String symptoms,
                  String diagnosis, LocalDate nextVisitRecommendedDate, String recordNotes,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.recordId = recordId;
@@ -33,19 +33,19 @@ public class Record {
     }
 
     // Getters and Setters
-    public int getRecordId() {
+    public String getRecordId() {
         return recordId;
     }
 
-    public void setRecordId(int recordId) {
+    public void setRecordId(String recordId) {
         this.recordId = recordId;
     }
 
-    public int getAppointmentId() {
+    public String getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(int appointmentId) {
+    public void setAppointmentId(String appointmentId) {
         this.appointmentId = appointmentId;
     }
 

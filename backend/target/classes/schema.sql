@@ -1,30 +1,34 @@
 -- Create Doctor table
 CREATE TABLE IF NOT EXISTS Doctor (
-    doctorId INTEGER PRIMARY KEY AUTOINCREMENT,
+    doctorId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     specialization TEXT,
+    licenseNumber TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Patient table
 CREATE TABLE IF NOT EXISTS Patient (
-    patientId INTEGER PRIMARY KEY AUTOINCREMENT,
+    patientId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     dateOfBirth DATE,
-    address TEXT,
+    email TEXT,
     phone TEXT,
+    emergencyContactName TEXT,
+    emergencyContactPhone TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create Appointment table
 CREATE TABLE IF NOT EXISTS Appointment (
-    appointmentId INTEGER PRIMARY KEY AUTOINCREMENT,
-    patientId INTEGER,
-    doctorId INTEGER,
-    appointmentDate TIMESTAMP NOT NULL,
+    appointmentId TEXT PRIMARY KEY,
+    patientId TEXT,
+    doctorId TEXT,
+    scheduledDateTime TIMESTAMP NOT NULL,
     status TEXT,
+    appointmentNotes TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (patientId) REFERENCES Patient(patientId),
@@ -33,8 +37,8 @@ CREATE TABLE IF NOT EXISTS Appointment (
 
 -- Create Record table
 CREATE TABLE IF NOT EXISTS Record (
-    recordId INTEGER PRIMARY KEY AUTOINCREMENT,
-    appointmentId INTEGER,
+    recordId TEXT PRIMARY KEY,
+    appointmentId TEXT,
     visitDate DATE NOT NULL,
     symptoms TEXT,
     diagnosis TEXT,
@@ -47,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Record (
 
 -- Create Insurance table
 CREATE TABLE IF NOT EXISTS Insurance (
-    insuranceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    insuranceId TEXT PRIMARY KEY,
     insuranceProvider TEXT NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
