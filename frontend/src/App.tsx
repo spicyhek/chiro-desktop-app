@@ -7,29 +7,34 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold">Chiropractor DB</h1>
+      <hr className="divider" />
+
+      <div className="heading-row">
+       <h2 className="appointments-heading">Appointments</h2>
+       <h2 className="patients-heading">Patients</h2>
+       <h2 className="records-heading">Records</h2>
+       <h2 className="doctors-heading">Doctors</h2>
+
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      <hr className="divider" />
+
+      <div className="boxes-container">
+       <div className="schedule-box">
+         <h2 className="schedule-heading">Today's Schedule:</h2>
+       </div>
+
+       <div className="recent-box">
+           <h2 className="recent-heading">Recent Activity:</h2>
+       </div>
+
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+    </div>
+  );
 }
 
-export default App
+export default App;
+
