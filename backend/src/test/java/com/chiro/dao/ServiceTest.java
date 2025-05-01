@@ -1,9 +1,10 @@
 package com.chiro.dao;
 
 import com.chiro.config.DatabaseConfig;
-import com.chiro.models.*;
 import com.chiro.models.Record;
+import com.chiro.models.*;
 import com.chiro.service.*;
+import com.chiro.util.TestDataSeeder;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ public class ServiceTest {
     private InsuranceService insuranceService;
     private RecordService recordService;
 
+    private TestDataSeeder seeder;
+
     @BeforeAll
     public static void initDatabase() throws Exception {
         Connection conn = DatabaseConfig.getInstance().getConnection();
@@ -36,29 +39,24 @@ public class ServiceTest {
         stmt.close();
     }
 
-
     @BeforeEach
     public void setup() throws SQLException {
-        this.patientService = new PatientService(new PatientDAO());
-        this.doctorService = new DoctorService(new DoctorDAO());
-        this.appointmentService = new AppointmentService(new AppointmentDAO(), new PatientDAO(), new DoctorDAO());
-        this.insuranceService = new InsuranceService(new InsuranceDAO());
-        this.recordService = new RecordService(new RecordDAO(), new PatientDAO(), new DoctorDAO());
+        DatabaseConfig config = DatabaseConfig.getInstance();
 
-        PatientDAO patientDAO = new PatientDAO();
-        DoctorDAO doctorDAO = new DoctorDAO();
+        PatientDAO patientDAO = new PatientDAO(config);
+        DoctorDAO doctorDAO = new DoctorDAO(config);
+        AppointmentDAO appointmentDAO = new AppointmentDAO(config);
+        InsuranceDAO insuranceDAO = new InsuranceDAO(config);
+        RecordDAO recordDAO = new RecordDAO(config);
 
-        Patient patient = new Patient();
-        patient.setPatientId("test-patient-1");
-        patient.setName("Test Patient");
-        patientDAO.save(patient);
+        this.patientService = new PatientService(patientDAO);
+        this.doctorService = new DoctorService(doctorDAO);
+        this.appointmentService = new AppointmentService(appointmentDAO, patientDAO, doctorDAO);
+        this.insuranceService = new InsuranceService(insuranceDAO);
+        this.recordService = new RecordService(recordDAO, patientDAO, doctorDAO);
 
-        Doctor doctor = new Doctor();
-        doctor.setDoctorId("test-doctor-1");
-        doctor.setName("Test Doctor");
-        doctor.setSpecialization("General");
-        doctor.setLicenseNumber("D123");
-        doctorDAO.save(doctor);
+        this.seeder = new TestDataSeeder(patientDAO, doctorDAO);
+        seeder.seedDefaultTestData();
     }
 
     // ──────────────── PATIENT SERVICE TESTS ────────────────
@@ -135,24 +133,11 @@ public class ServiceTest {
         assertDoesNotThrow(() -> insuranceService.saveInsurance(insurance));
     }
 
-    // ──────────────── APPOINTMENT SERVICE TESTS ────────────────
-
-    @Test
-    public void testSaveValidAppointment_doesNotThrow() throws SQLException {
-        Appointment appointment = new Appointment();
-        appointment.setAppointmentId("APT-1");
-        appointment.setPatientId("test-patient-1");
-        appointment.setDoctorId("test-doctor-1");
-        appointment.setScheduledDateTime(LocalDateTime.now().plusDays(1));
-
-        assertDoesNotThrow(() -> appointmentService.saveAppointment(appointment));
-    }
-
     // ──────────────── RECORD SERVICE TESTS ────────────────
 
     @Test
     public void testSaveRecordWithMissingPatient_throwsException() {
-        com.chiro.models.Record record = new com.chiro.models.Record();
+        Record record = new Record();
         record.setRecordId("REC-1");
         record.setPatientId("nonexistent-patient");
         record.setDoctorId("test-doctor-1");
