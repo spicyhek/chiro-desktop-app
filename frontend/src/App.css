@@ -1,23 +1,18 @@
-.patients-heading,
-.doctors-heading,
-.records-heading,
-.appointments-heading {
-  font-size: 18px;
-  font-weight: 300; /* or use 'normal' */
-  color: #555;      /* a lighter gray */
-  margin-left: 8px; /* optional: move to the right */
-}
-
-.schedule-heading {
-  font-size: 22px;
-  font-weight: bold;
-  margin-left: 16px;
-
-}
 .heading-row {
   display: flex;
   gap: 20px; /* space between headings */
   margin-left: 4px; /* optional indent */
+}
+
+.component-heading {
+  font-size: 18px;
+  font-weight: 300; /* or use 'normal' */
+  color: #555;      /* a lighter gray */
+  margin-left: 20px; /* optional: move to the right */
+}
+
+.component-heading:hover {
+  text-decoration: underline;
 }
 
 .divider {
@@ -26,26 +21,76 @@
   margin: 16px 0;
 }
 
+.button_container {
+  width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 40px;
+    margin-top: 4px 2px;
+}
+
+.button {
+    border: none;
+    color: #555;
+    border: 2px solid #999;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    margin-right : 20px;
+}
+
+.button:hover {
+  background-color: #CDCDCD;
+}
+
+
 .boxes-container {
   display: flex;
   gap: 40px;
   margin-top: 20px;
 }
 
-.schedule-box {
-  width: 500px;
-  height: 350px;
-  border: 2px solid #999;
+.component-box {
+  width: 800px;
+  height: 550px;
   margin-top: 16px;
   margin-left: 20px;
-  padding-left: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
-.recent-box {
-  width: 400px;
-  height: 350px;
+.function-box {
+  width: 480px;
+  height: 550px;
   border: 2px solid #999;
   margin-top: 16px;
   margin-left: 20px;
   padding-left: 20px;
+}
+
+.lower-heading {
+  display: flex;
+  gap: 10px;
+  margin-left: 4px;
+  margin-top: 10px;
+}
+
+
+.components-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.components-table th {
+  background-color: #f0f0f0;
+  text-align: left;
+  padding: 8px;
+}
+
+.components-table td {
+  padding: 8px;
 }
