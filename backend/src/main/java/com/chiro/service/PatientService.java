@@ -47,6 +47,10 @@ public class PatientService {
             ServiceValidationHelper.validateEmailFormat(patient.getEmail());
         }
 
+        if (patient.getPhone() != null) {
+            ServiceValidationHelper.validatePhoneNumberFormat(patient.getPhone());
+        }
+
         patientDAO.save(patient);
     }
 
