@@ -64,6 +64,16 @@ public class AppointmentService {
 
         appointmentDAO.save(appointment);
     }
-    // Once every check passes, the DAO is saved to the database.
 
+    public void deleteAppointment(String appointmentId) throws SQLException {
+        ServiceValidationHelper.validateNotBlank(appointmentId, "Appointment ID");
+
+        if (appointmentDAO.findById(appointmentId) == null) {
+            throw new IllegalArgumentException("Appointment does not exist: " + appointmentId);
+            }
+
+        appointmentDAO.delete(appointmentId);
+
+    }
+    // Once every check passes, the DAO is saved to the database.
 }
