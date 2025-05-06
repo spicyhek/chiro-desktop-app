@@ -13,6 +13,7 @@ import java.util.List;
 /*
 Patient controller. Supports HTTP requests POST, GET (patients by ID and all patients), PUT (updates), and DELETE.
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
@@ -26,8 +27,9 @@ public class PatientController {
     @PostMapping
     public ResponseEntity<?> createPatient(@RequestBody Patient patient) {
         try {
+            Patient saved = patientService.savePatient(patient);
             patientService.savePatient(patient);
-            return ResponseEntity.ok("Patient saved successfully");
+            return ResponseEntity.ok(patient);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
@@ -46,7 +48,7 @@ public class PatientController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<?> getPatientById(@PathVariable("id") String id) {
         try {
             Patient patient = patientService.getPatientById(id);

@@ -45,7 +45,7 @@ public class DoctorController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/doctors/{id}")
     public ResponseEntity<?> getDoctorById(@PathVariable("id") String id) {
         try {
             Doctor doctor = doctorService.getDoctorById(id);

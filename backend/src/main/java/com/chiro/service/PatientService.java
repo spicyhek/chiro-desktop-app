@@ -34,7 +34,7 @@ public class PatientService {
         return patient;
     }
 
-    public void savePatient(Patient patient) throws SQLException {
+    public Patient savePatient(Patient patient) throws SQLException {
         ServiceValidationHelper.validateNotNull(patient, "Patient");
 
         if (patient.getPatientId() != null) {
@@ -47,7 +47,7 @@ public class PatientService {
             ServiceValidationHelper.validateEmailFormat(patient.getEmail());
         }
 
-        patientDAO.save(patient);
+        return patientDAO.save(patient);
     }
 
     public void deletePatient(String patientId) throws SQLException {
