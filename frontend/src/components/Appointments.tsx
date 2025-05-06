@@ -1,9 +1,11 @@
 // Appointments.tsx
 type Appointment = {
-  id: number;
-  patientName: string;
-  date: string;
-  time: string;
+  appointmentId?: string;
+  patientId: string;
+  doctorId: string;
+  scheduledDateTime: string;
+  status: string;
+  appointmentNotes?: string;
 };
 
 type Props = {
@@ -17,17 +19,23 @@ export default function Appointments({ data }: Props) {
       <table className="components-table" border={1} cellPadding={8}>
         <thead>
           <tr>
+            <th>ID</th>
             <th>Patient</th>
-            <th>Date</th>
-            <th>Time</th>
+            <th>Doctor</th>
+            <th>Scheduled</th>
+            <th>Status</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           {data.map((appt) => (
-            <tr key={appt.id}>
-              <td>{appt.patientName}</td>
-              <td>{appt.date}</td>
-              <td>{appt.time}</td>
+            <tr key={appt.appointmentId}>
+              <td>{appt.appointmentId}</td>
+              <td>{appt.patientId}</td>
+              <td>{appt.doctorId}</td>
+              <td>{new Date(appt.scheduledDateTime).toLocaleString()}</td>
+              <td>{appt.status}</td>
+              <td>{appt.appointmentNotes}</td>
             </tr>
           ))}
         </tbody>

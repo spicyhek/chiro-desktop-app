@@ -43,9 +43,9 @@ public class AppointmentService {
         return appointment;
     }
 
-    public void saveAppointment(Appointment appointment) throws SQLException {
+    public Appointment saveAppointment(Appointment appointment) throws SQLException {
         ServiceValidationHelper.validateNotNull(appointment, "Appointment");
-        ServiceValidationHelper.validateNotBlank(appointment.getAppointmentId(), "Appointment ID");
+        //ServiceValidationHelper.validateNotBlank(appointment.getAppointmentId(), "Appointment ID");
         ServiceValidationHelper.validateNotBlank(appointment.getPatientId(), "Patient ID");
         ServiceValidationHelper.validateNotBlank(appointment.getDoctorId(), "Doctor ID");
 
@@ -63,6 +63,7 @@ public class AppointmentService {
 
 
         appointmentDAO.save(appointment);
+        return appointment;
     }
 
     public void deleteAppointment(String appointmentId) throws SQLException {

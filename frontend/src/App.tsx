@@ -6,22 +6,32 @@ import Appointments from './components/Appointments'
 import Patients from './components/Patients'
 import Records from './components/Records'
 import Doctors from './components/Doctors'
+import AddAppointmentSection from './functions/add_appointment'
+import AddPatientSection from './functions/add_patient'
+import AddRecordSection from './functions/add_records'
 
 export default function App() {
+
   const [showAppointments, setShowAppointments] = useState(false);
   const [showPatients, setShowPatients] = useState(false);
   const [showRecords, setShowRecords] = useState(false);
   const [showDoctors, setShowDoctors] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const appointments = [
+  const [showAddData, setShowAddData] = useState(false);
+
+  {/*const appointments = [
     { id: 1, patientName: 'Jane Doe', date: '2025-05-01', time: '10:00 AM' },
     { id: 2, patientName: 'John Smith', date: '2025-05-02', time: '11:30 AM' },
   ];
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   const patients = [
       { id: 1, patientName: 'Jane Doe', dateOfBirth: '2002-02-12', email: 'doe@gmail.com', phone: '5081648764'},
       { id: 2, patientName: 'John Smith'},
-  ];
+  ];*/}
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
 
   const records = [
        { id: 1, patientName: 'Jane Doe', visitDate: '2002-02-12', symptoms: 'backpain', diagnosis: 'stress'},
@@ -43,9 +53,21 @@ export default function App() {
        <h2 className="component-heading" onClick={() => setShowDoctors((prev) => !prev)}>Doctors</h2>
 
        <div className = "button_container">
-        <button className="button"> Add Appointment </button>
-        <button className="button">Add Patient</button>
-        <button className="button">Delete Record</button>
+        {/*<button className="button"> Add Appointment </button>*/}
+        <button className="button" onClick={() => setShowAddData((prev) => !prev)}>
+           {showAddData ? 'Cancel' : 'Add Data'}
+        </button>
+        {/*}
+        <button className="button" onClick={() => setShowAddPatForm((prev) => !prev)}>
+            {showAddForm ? 'Cancel' : 'Add Patient'}
+         </button>
+
+        <button className="button" onClick={() => setShowDeleteForm((prev) => !prev)}>
+           {showAddForm ? 'Cancel' : 'Delete Record'}
+         </button>
+
+        {/*}<button className="button">Add Patient</button>
+        <button className="button">Delete Record</button>*/}
        </div>
 
       </div>
@@ -61,6 +83,13 @@ export default function App() {
        </div>
 
        <div className="function-box">
+         {showAddData && (
+           <>
+             <AddAppointmentSection onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}/>
+             <AddPatientSection onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])} />
+             <AddRecordSection/>
+           </>
+         )}
        </div>
       </div>
 

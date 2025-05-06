@@ -47,15 +47,16 @@ public class PatientDAO {
         return patients;
     }
 
-    public void save(Patient patient) throws SQLException {
+    public Patient save(Patient patient) throws SQLException {
         if (patient.getPatientId() == null) {
-            insert(patient);
+            return insert(patient);
         } else {
             update(patient);
+            return patient;
         }
     }
 
-    private void insert(Patient patient) throws SQLException {
+    private Patient insert(Patient patient) throws SQLException {
         String sql = "INSERT INTO Patient (patientId, name, dateOfBirth, email, phone, " +
                     "emergencyContactName, emergencyContactPhone, createdAt, updatedAt) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -64,7 +65,13 @@ public class PatientDAO {
             patient.setPatientId(UUID.randomUUID().toString());
             setStatementParameters(stmt, patient);
             stmt.executeUpdate();
+
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                patient.setPatientId(String.valueOf(keys.getInt(1))); // or keep as int if your model allows
+            }
         }
+        return patient;
     }
 
     private void update(Patient patient) throws SQLException {

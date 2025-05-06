@@ -15,6 +15,7 @@ import java.util.List;
 /*
 Appointment controller. Supports HTTP requests POST, GET (appointments by ID and all appointments), PUT (updates), and DELETE.
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
@@ -25,18 +26,30 @@ public class AppointmentController {
         this.appointmentService = new AppointmentService(new AppointmentDAO(), new PatientDAO(), new DoctorDAO());
     }
 
+//    @PostMapping
+//    public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
+//        try {
+//            appointmentService.saveAppointment(appointment);
+//            return ResponseEntity.ok("Appointment saved successfully");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+//        } catch (SQLException e) {
+//            return ResponseEntity.internalServerError().body("Database error: " + e.getMessage());
+//        }
+//
+//    }
     @PostMapping
     public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
         try {
-            appointmentService.saveAppointment(appointment);
-            return ResponseEntity.ok("Appointment saved successfully");
+            Appointment saved = appointmentService.saveAppointment(appointment);
+            return ResponseEntity.ok(saved); // Return JSON object
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
             return ResponseEntity.internalServerError().body("Database error: " + e.getMessage());
         }
-
     }
+
 
     @GetMapping
     public ResponseEntity<?> getAllAppointments() {
@@ -48,7 +61,7 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<?> getAppointmentById(@PathVariable("id") String id) {
         try {
             Appointment appointment = appointmentService.getAppointmentById(id);
@@ -85,5 +98,7 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body("Could not delete appointment: " + id);
         }
     }
+
+
 
 }

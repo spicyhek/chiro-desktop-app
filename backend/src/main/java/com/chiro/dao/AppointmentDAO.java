@@ -47,15 +47,16 @@ public class AppointmentDAO {
         return appointments;
     }
 
-    public void save(Appointment appointment) throws SQLException {
+    public Appointment save(Appointment appointment) throws SQLException {
         if (appointment.getAppointmentId() == null) {
-            insert(appointment);
+            return insert(appointment);
         } else {
             update(appointment);
+            return appointment;
         }
     }
 
-    private void insert(Appointment appointment) throws SQLException {
+    private Appointment insert(Appointment appointment) throws SQLException {
         String sql = "INSERT INTO Appointment (appointmentId, patientId, doctorId, scheduledDateTime, " +
                     "status, appointmentNotes, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbConfig.getConnection();
@@ -63,7 +64,14 @@ public class AppointmentDAO {
             appointment.setAppointmentId(UUID.randomUUID().toString());
             setStatementParameters(stmt, appointment);
             stmt.executeUpdate();
+
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                appointment.setAppointmentId(String.valueOf(keys.getInt(1))); // store the generated ID
+            }
         }
+        return appointment;
+
     }
 
     private void update(Appointment appointment) throws SQLException {
