@@ -8,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 Doctor controller. Supports HTTP requests POST, GET (doctors by ID and all patients), PUT (updates), and DELETE.
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
@@ -26,12 +29,12 @@ public class DoctorController {
     @PostMapping
     public ResponseEntity<?> createDoctor(@RequestBody Doctor doctor) {
         try {
-            doctorService.saveDoctor(doctor);
-            return ResponseEntity.ok("Doctor saved successfully");
+            Doctor saved = doctorService.saveDoctor(doctor);
+            return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Validation error: " + e.getMessage()));
         } catch (SQLException e) {
-            return ResponseEntity.badRequest().body("Database error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Database error: " + e.getMessage()));
         }
     }
 
@@ -45,7 +48,7 @@ public class DoctorController {
         }
     }
 
-    @GetMapping("/doctors/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<?> getDoctorById(@PathVariable("id") String id) {
         try {
             Doctor doctor = doctorService.getDoctorById(id);

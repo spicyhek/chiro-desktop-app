@@ -33,7 +33,7 @@ public class DoctorService {
         return doctor;
     }
 
-    public void saveDoctor(Doctor doctor) throws SQLException {
+    public Doctor saveDoctor(Doctor doctor) throws SQLException {
         ServiceValidationHelper.validateNotNull(doctor, "Doctor");
 
         if (doctor.getDoctorId() != null) {
@@ -44,7 +44,7 @@ public class DoctorService {
         ServiceValidationHelper.validateNotBlank(doctor.getSpecialization(), "Doctor Specialization");
         ServiceValidationHelper.validateNotBlank(doctor.getLicenseNumber(), "Doctor License Number");
 
-        doctorDAO.save(doctor);
+        return doctorDAO.save(doctor);
     }
 
     public void deleteDoctor(String doctorId) throws SQLException {

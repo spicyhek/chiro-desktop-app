@@ -47,26 +47,32 @@ public class DoctorDAO {
         return doctors;
     }
 
-    public void save(Doctor doctor) throws SQLException {
-        if (doctor.getDoctorId() == null) {
-            insert(doctor);
+    public Doctor save(Doctor doctor) throws SQLException {
+        if (doctor.getDoctorId() == null){
+            return insert(doctor);
         } else {
-            update(doctor);
+            return update(doctor);
         }
     }
 
-    private void insert(Doctor doctor) throws SQLException {
+    private Doctor insert(Doctor doctor) throws SQLException {
         String sql = "INSERT INTO Doctor (doctorId, name, specialization, licenseNumber, createdAt, updatedAt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             doctor.setDoctorId(UUID.randomUUID().toString());
             setStatementParameters(stmt, doctor);
             stmt.executeUpdate();
+
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                doctor.setDoctorId(String.valueOf(keys.getInt(1))); // or keep as int if your model allow
+            }
         }
+        return doctor;
     }
 
-    private void update(Doctor doctor) throws SQLException {
+    private Doctor update(Doctor doctor) throws SQLException {
         String sql = "UPDATE Doctor SET name = ?, specialization = ?, licenseNumber = ?, updatedAt = ? " +
                     "WHERE doctorId = ?";
         try (Connection conn = dbConfig.getConnection();
@@ -78,6 +84,7 @@ public class DoctorDAO {
             stmt.setString(5, doctor.getDoctorId());
             stmt.executeUpdate();
         }
+        return doctor;
     }
 
     public void delete(String doctorId) throws SQLException {
