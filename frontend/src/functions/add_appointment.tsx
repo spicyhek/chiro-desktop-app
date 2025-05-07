@@ -16,7 +16,7 @@ type Props = {
 export default function AddAppointmentSection({ onAdd }: Props) {
   const [newAppointment, setNewAppointment] = useState({
     patientId: '',
-    doctorId: '1',
+    doctorId: '',
     scheduledDateTime: '',
     status: '',
     appointmentNotes: '',
@@ -86,8 +86,6 @@ const handleAddAppointment = () => {
           <select name="status" value={newAppointment.status} onChange={handleInputChange} required>
             <option value="">Select status</option>
             <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
           </select>
           <input
             name = "appointmentNotes"

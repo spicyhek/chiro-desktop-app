@@ -1,6 +1,6 @@
 type Doctor = {
-  id: number;
-  doctorName: string;
+  doctorId: number;
+  name: string;
   specialization: string;
   licenseNumber: string;
 };
@@ -16,15 +16,17 @@ export default function Doctors({ data }: Props) {
       <table className="components-table" border={1} cellPadding={8}>
         <thead>
           <tr>
+            <th>Doctor ID</th>
             <th>Name</th>
             <th>Specialization</th>
-            <th>licenseNumber</th>
+            <th>License Number</th>
           </tr>
         </thead>
         <tbody>
           {data.map((doc) => (
-            <tr key={doc.id}>
-              <td>{doc.doctorName}</td>
+            <tr key={doc.doctorId}>
+              <td>{doc.doctorId}</td>
+              <td>{doc.name}</td>
               <td>{doc.specialization}</td>
               <td>{doc.licenseNumber}</td>
             </tr>

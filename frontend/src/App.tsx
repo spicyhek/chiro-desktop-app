@@ -9,6 +9,10 @@ import Doctors from './components/Doctors'
 import AddAppointmentSection from './functions/add_appointment'
 import AddPatientSection from './functions/add_patient'
 import AddRecordSection from './functions/add_records'
+import AddDoctorSection from './functions/add_doctor'
+import DeleteEntity from './functions/delete_entity'
+import UpdateEntity from './functions/update_entity'
+
 
 export default function App() {
 
@@ -19,27 +23,18 @@ export default function App() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const [showAddData, setShowAddData] = useState(false);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
 
-  {/*const appointments = [
-    { id: 1, patientName: 'Jane Doe', date: '2025-05-01', time: '10:00 AM' },
-    { id: 2, patientName: 'John Smith', date: '2025-05-02', time: '11:30 AM' },
-  ];
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  const patients = [
-      { id: 1, patientName: 'Jane Doe', dateOfBirth: '2002-02-12', email: 'doe@gmail.com', phone: '5081648764'},
-      { id: 2, patientName: 'John Smith'},
-  ];*/}
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   const records = [
        { id: 1, patientName: 'Jane Doe', visitDate: '2002-02-12', symptoms: 'backpain', diagnosis: 'stress'},
    ];
 
-  const doctors = [
-          { id: 1, doctorName: 'Bob', specialization: 'backs', licenseNumber: '472'},
-  ];
 
   return (
     <div className="p-4">
@@ -53,21 +48,19 @@ export default function App() {
        <h2 className="component-heading" onClick={() => setShowDoctors((prev) => !prev)}>Doctors</h2>
 
        <div className = "button_container">
-        {/*<button className="button"> Add Appointment </button>*/}
+
         <button className="button" onClick={() => setShowAddData((prev) => !prev)}>
            {showAddData ? 'Cancel' : 'Add Data'}
         </button>
-        {/*}
-        <button className="button" onClick={() => setShowAddPatForm((prev) => !prev)}>
-            {showAddForm ? 'Cancel' : 'Add Patient'}
+
+        <button className="button" onClick={() => setShowUpdateForm((prev) => !prev)}>
+            {showUpdateForm ? 'Cancel' : 'Update Data'}
          </button>
 
         <button className="button" onClick={() => setShowDeleteForm((prev) => !prev)}>
-           {showAddForm ? 'Cancel' : 'Delete Record'}
+           {showDeleteForm ? 'Cancel' : 'Delete Data'}
          </button>
 
-        {/*}<button className="button">Add Patient</button>
-        <button className="button">Delete Record</button>*/}
        </div>
 
       </div>
@@ -88,8 +81,11 @@ export default function App() {
              <AddAppointmentSection onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}/>
              <AddPatientSection onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])} />
              <AddRecordSection/>
+             <AddDoctorSection onAdd={(newDoctor) => setDoctors(prev => [...prev, newDoctor])} />
            </>
          )}
+        {showDeleteForm && <DeleteEntity />}
+        {showUpdateForm && <UpdateEntity />}
        </div>
       </div>
 
