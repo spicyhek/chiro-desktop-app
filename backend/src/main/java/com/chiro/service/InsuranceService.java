@@ -3,20 +3,18 @@ package com.chiro.service;
 import com.chiro.dao.InsuranceDAO;
 import com.chiro.models.Insurance;
 import com.chiro.util.ServiceValidationHelper;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.util.List;
 
-// Service for Insurance DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting. Call these methods in the controller
-// Additional checks can be made if needed
+@Service
 public class InsuranceService {
 
     private final InsuranceDAO insuranceDAO;
 
-    public InsuranceService() {
-        this.insuranceDAO = new InsuranceDAO();
-    }
-
-    public InsuranceService (InsuranceDAO insuranceDAO) {
+    // Constructor injection of the DAO bean
+    public InsuranceService(InsuranceDAO insuranceDAO) {
         this.insuranceDAO = insuranceDAO;
     }
 
@@ -28,19 +26,22 @@ public class InsuranceService {
         ServiceValidationHelper.validateNotBlank(id, "Insurance ID");
         Insurance insurance = insuranceDAO.findById(id);
         if (insurance == null) {
-            throw new SQLException("Insurance not found");
+            throw new IllegalArgumentException("Insurance not found: " + id);
         }
         return insurance;
     }
 
-    public void saveInsurance(Insurance insurance) throws SQLException {
+    public Insurance saveInsurance(Insurance insurance) throws SQLException {
         ServiceValidationHelper.validateNotNull(insurance, "Insurance");
 
-        if(insurance.getInsuranceId() != null) {
-            ServiceValidationHelper.validateNotBlank(insurance.getInsuranceId(), "Insurance ID");
+        String id = insurance.getInsuranceId();
+        if (id != null && !id.isEmpty()) {
+            ServiceValidationHelper.validateNotBlank(id, "Insurance ID");
         }
         ServiceValidationHelper.validateNotBlank(insurance.getInsuranceProvider(), "Insurance Provider");
+
         insuranceDAO.save(insurance);
+        return insurance;
     }
 
     public void deleteInsurance(String id) throws SQLException {
@@ -48,9 +49,8 @@ public class InsuranceService {
 
         Insurance insurance = insuranceDAO.findById(id);
         if (insurance == null) {
-            throw new SQLException("Insurance not found");
+            throw new IllegalArgumentException("Insurance not found: " + id);
         }
-
         insuranceDAO.delete(id);
     }
 }

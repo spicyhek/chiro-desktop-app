@@ -14,14 +14,14 @@ const UpdateEntity: React.FC = () => {
         <option value="appointments">Appointment</option>
         <option value="patients">Patient</option>
         <option value="doctors">Doctor</option>
-        <option value="records">Record</option>
+        <option value="medicalRecords">Record</option>
       </select>
 
       <div className="mt-4">
         {type === "appointments" && <UpdateAppointment />}
         {type === "patients" && <UpdatePatient />}
         {type === "doctors" && <UpdateDoctor />}
-        {type === "records" && <UpdateRecord />}
+        {type === "medicalRecords" && <UpdateRecord />}
       </div>
     </div>
   );

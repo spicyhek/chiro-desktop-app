@@ -1,153 +1,156 @@
 package com.chiro.dao;
 
-import com.chiro.config.DatabaseConfig;
-import com.chiro.models.Record;
 import com.chiro.models.*;
 import com.chiro.service.*;
 import com.chiro.util.TestDataSeeder;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import javax.sql.DataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServiceTest {
+
+    @Autowired
+    private DataSource dataSource;
 
     private PatientService patientService;
     private DoctorService doctorService;
     private AppointmentService appointmentService;
     private InsuranceService insuranceService;
     private RecordService recordService;
-
     private TestDataSeeder seeder;
 
     @BeforeAll
-    public static void initDatabase() throws Exception {
-        Connection conn = DatabaseConfig.getInstance().getConnection();
-        Statement stmt = conn.createStatement();
-        String schemaSql = new String(Files.readAllBytes(Paths.get("src/main/resources/schema.sql")));
-        stmt.executeUpdate(schemaSql);
-        stmt.close();
+    public void initDatabase() throws Exception {
+        // Read the entire schema.sql file and split on semicolons so we run each CREATE
+        String ddl = new String(Files.readAllBytes(Paths.get("src/main/resources/schema.sql")));
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+            for (String sql : ddl.split(";")) {
+                sql = sql.trim();
+                if (!sql.isEmpty()) {
+                    stmt.execute(sql);
+                }
+            }
+        }
     }
 
     @BeforeEach
-    public void setup() throws SQLException {
-        DatabaseConfig config = DatabaseConfig.getInstance();
+    public void setup() throws Exception {
+        // Instantiate each DAO with the Spring-managed DataSource
+        PatientDAO      patientDAO      = new PatientDAO(dataSource);
+        DoctorDAO       doctorDAO       = new DoctorDAO(dataSource);
+        AppointmentDAO  appointmentDAO  = new AppointmentDAO(dataSource);
+        InsuranceDAO    insuranceDAO    = new InsuranceDAO(dataSource);
+        RecordDAO       recordDAO       = new RecordDAO(dataSource);
 
-        PatientDAO patientDAO = new PatientDAO(config);
-        DoctorDAO doctorDAO = new DoctorDAO(config);
-        AppointmentDAO appointmentDAO = new AppointmentDAO(config);
-        InsuranceDAO insuranceDAO = new InsuranceDAO(config);
-        RecordDAO recordDAO = new RecordDAO(config);
-
-        this.patientService = new PatientService(patientDAO);
-        this.doctorService = new DoctorService(doctorDAO);
+        // Wire up your services
+        this.patientService     = new PatientService(patientDAO);
+        this.doctorService      = new DoctorService(doctorDAO);
         this.appointmentService = new AppointmentService(appointmentDAO, patientDAO, doctorDAO);
-        this.insuranceService = new InsuranceService(insuranceDAO);
-        this.recordService = new RecordService(recordDAO, patientDAO, doctorDAO);
+        this.insuranceService   = new InsuranceService(insuranceDAO);
+        this.recordService      = new RecordService(recordDAO, patientDAO, doctorDAO);
 
+        // Seed whatever baseline data you need
         this.seeder = new TestDataSeeder(patientDAO, doctorDAO);
         seeder.seedDefaultTestData();
     }
 
-    // ──────────────── PATIENT SERVICE TESTS ────────────────
+    // ────────── PATIENT TESTS ──────────
 
     @Test
     public void testSaveValidPatient_doesNotThrow() {
-        Patient patient = new Patient();
-        patient.setPatientId("test-patient-1");
-        patient.setName("Alice");
-        patient.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        patient.setEmail("alice@example.com");
+        Patient p = new Patient();
+        p.setPatientId("test-patient-1");
+        p.setName("Alice");
+        p.setDateOfBirth(LocalDate.of(2000, 1, 1));
+        p.setEmail("alice@example.com");
 
-        assertDoesNotThrow(() -> patientService.savePatient(patient));
+        assertDoesNotThrow(() -> patientService.savePatient(p));
     }
 
     @Test
     public void testSavePatient_missingName_throwsException() {
-        Patient patient = new Patient();
-        patient.setPatientId("test-patient-2");
+        Patient p = new Patient();
+        p.setPatientId("test-patient-2");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            patientService.savePatient(patient);
-        });
-
-        assertTrue(exception.getMessage().contains("Patient name"));
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> patientService.savePatient(p)
+        );
+        assertTrue(ex.getMessage().contains("Patient name"));
     }
 
     @Test
     public void testSavePatient_invalidEmail_throwsException() {
-        Patient patient = new Patient();
-        patient.setPatientId("test-patient-3");
-        patient.setName("Bob");
-        patient.setEmail("invalid-email");
+        Patient p = new Patient();
+        p.setPatientId("test-patient-3");
+        p.setName("Bob");
+        p.setEmail("invalid-email");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            patientService.savePatient(patient);
-        });
-
-        assertTrue(exception.getMessage().toLowerCase().contains("email"));
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> patientService.savePatient(p)
+        );
+        assertTrue(ex.getMessage().toLowerCase().contains("email"));
     }
 
     @Test
     public void testDeleteNonexistentPatient_throwsSQLException() {
-        String nonExistentId = "nonexistent-patient-id";
-
-        Exception exception = assertThrows(SQLException.class, () -> {
-            patientService.deletePatient(nonExistentId);
-        });
-
-        assertTrue(exception.getMessage().contains("Patient not found"));
+        String id = "nonexistent-patient-id";
+        Exception ex = assertThrows(SQLException.class,
+                () -> patientService.deletePatient(id)
+        );
+        assertTrue(ex.getMessage().contains("Patient not found"));
     }
 
-    // ──────────────── DOCTOR SERVICE TESTS ────────────────
+    // ────────── DOCTOR TESTS ──────────
 
     @Test
     public void testSaveValidDoctor_doesNotThrow() {
-        Doctor doctor = new Doctor();
-        doctor.setDoctorId("test-doctor-1");
-        doctor.setName("Dr. Jane");
-        doctor.setSpecialization("Orthopedics");
-        doctor.setLicenseNumber("LIC-001");
+        Doctor d = new Doctor();
+        d.setDoctorId("test-doctor-1");
+        d.setName("Dr. Jane");
+        d.setSpecialization("Orthopedics");
+        d.setLicenseNumber("LIC-001");
 
-        assertDoesNotThrow(() -> doctorService.saveDoctor(doctor));
+        assertDoesNotThrow(() -> doctorService.saveDoctor(d));
     }
 
-    // ──────────────── INSURANCE SERVICE TESTS ────────────────
+    // ────────── INSURANCE TESTS ──────────
 
     @Test
     public void testSaveValidInsurance_doesNotThrow() {
-        Insurance insurance = new Insurance();
-        insurance.setInsuranceId("INS-1");
-        insurance.setInsuranceProvider("HealthNet");
+        Insurance i = new Insurance();
+        i.setInsuranceId("INS-1");
+        i.setInsuranceProvider("HealthNet");
 
-        assertDoesNotThrow(() -> insuranceService.saveInsurance(insurance));
+        assertDoesNotThrow(() -> insuranceService.saveInsurance(i));
     }
 
-    // ──────────────── RECORD SERVICE TESTS ────────────────
+    // ────────── RECORD TESTS ──────────
 
     @Test
     public void testSaveRecordWithMissingPatient_throwsException() {
-        Record record = new Record();
-        record.setRecordId("REC-1");
-        record.setPatientId("nonexistent-patient");
-        record.setDoctorId("test-doctor-1");
-        record.setDiagnosis("Back pain");
-        record.setVisitDate(LocalDate.now());
+        MedicalRecord r = new MedicalRecord();
+        r.setRecordId("REC-1");
+        r.setPatientId("nonexistent-patient");
+        r.setDoctorId("test-doctor-1");
+        r.setDiagnosis("Back pain");
+        r.setVisitDate(java.time.LocalDate.now());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            recordService.saveRecord(record);
-        });
-
-        assertTrue(exception.getMessage().contains("Patient not found"));
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> recordService.saveRecord(r)
+        );
+        assertTrue(ex.getMessage().contains("Patient not found"));
     }
 }

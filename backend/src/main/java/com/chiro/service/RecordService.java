@@ -3,8 +3,9 @@ package com.chiro.service;
 import com.chiro.dao.RecordDAO;
 import com.chiro.dao.PatientDAO;
 import com.chiro.dao.DoctorDAO;
-import com.chiro.models.Record;
+import com.chiro.models.MedicalRecord;
 import com.chiro.util.ServiceValidationHelper;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -12,17 +13,12 @@ import java.util.List;
 
 // Service for Record DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting. Call these methods in the controller
 // Additional checks can be made if needed
+@Service
 public class RecordService {
 
     private final RecordDAO recordDAO;
     private final PatientDAO patientDAO;
     private final DoctorDAO doctorDAO;
-
-    public RecordService() {
-        this.recordDAO = new RecordDAO();
-        this.patientDAO = new PatientDAO();
-        this.doctorDAO = new DoctorDAO();
-    }
 
     public RecordService(RecordDAO recordDAO, PatientDAO patientDAO, DoctorDAO doctorDAO) {
         this.recordDAO = recordDAO;
@@ -30,49 +26,50 @@ public class RecordService {
         this.doctorDAO = doctorDAO;
     }
 
-    public List<Record> getAllRecords() throws SQLException {
+    public List<MedicalRecord> getAllRecords() throws SQLException {
         return recordDAO.findAll();
     }
 
-    public Record getRecordById(String recordId) throws SQLException {
+    public MedicalRecord getRecordById(String recordId) throws SQLException {
         ServiceValidationHelper.validateNotBlank(recordId, "Record ID");
-        Record record = recordDAO.findById(recordId);
-        if (record == null) {
+        MedicalRecord medicalRecord = recordDAO.findById(recordId);
+        if (medicalRecord == null) {
             throw new SQLException("Record not found: " + recordId);
         }
-        return record;
+        return medicalRecord;
     }
 
-    public void saveRecord(Record record) throws SQLException {
-        ServiceValidationHelper.validateNotNull(record, "Record");
+    public MedicalRecord saveRecord(MedicalRecord medicalRecord) throws SQLException {
+        ServiceValidationHelper.validateNotNull(medicalRecord, "Record");
 
-        if (record.getRecordId() != null) {
-            ServiceValidationHelper.validateNotBlank(record.getRecordId(), "Record ID");
+        if (medicalRecord.getRecordId() != null) {
+            ServiceValidationHelper.validateNotBlank(medicalRecord.getRecordId(), "Record ID");
         }
 
-        ServiceValidationHelper.validateNotBlank(record.getPatientId(), "Patient ID");
-        ServiceValidationHelper.validateNotBlank(record.getDoctorId(), "Doctor ID");
-        ServiceValidationHelper.validateNotBlank(record.getDiagnosis(), "Diagnosis");
+        ServiceValidationHelper.validateNotBlank(medicalRecord.getPatientId(), "Patient ID");
+        ServiceValidationHelper.validateNotBlank(medicalRecord.getDoctorId(), "Doctor ID");
+        ServiceValidationHelper.validateNotBlank(medicalRecord.getDiagnosis(), "Diagnosis");
 
-        if (record.getVisitDate() != null && record.getVisitDate().isAfter(LocalDate.now())) {
+        if (medicalRecord.getVisitDate() != null && medicalRecord.getVisitDate().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Visit date cannot be in the future.");
         }
 
-        if (patientDAO.findById(record.getPatientId()) == null) {
-            throw new IllegalArgumentException("Patient not found: " + record.getPatientId());
+        if (patientDAO.findById(medicalRecord.getPatientId()) == null) {
+            throw new IllegalArgumentException("Patient not found: " + medicalRecord.getPatientId());
         }
 
-        if (doctorDAO.findById(record.getDoctorId()) == null) {
-            throw new IllegalArgumentException("Doctor not found: " + record.getDoctorId());
+        if (doctorDAO.findById(medicalRecord.getDoctorId()) == null) {
+            throw new IllegalArgumentException("Doctor not found: " + medicalRecord.getDoctorId());
         }
 
-        recordDAO.save(record);
+        recordDAO.save(medicalRecord);
+        return medicalRecord;
     }
 
     public void deleteRecord(String recordId) throws SQLException {
         ServiceValidationHelper.validateNotBlank(recordId, "Record ID");
 
-        Record existing = recordDAO.findById(recordId);
+        MedicalRecord existing = recordDAO.findById(recordId);
         if (existing == null) {
             throw new SQLException("Record not found: " + recordId);
         }

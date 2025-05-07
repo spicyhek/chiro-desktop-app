@@ -1,85 +1,103 @@
 package com.chiro.controller;
 
-import com.chiro.dao.InsuranceDAO;
 import com.chiro.models.Insurance;
 import com.chiro.service.InsuranceService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
-/*
-Insurance controller. Supports HTTP requests POST, GET (insurance by ID and all insurances), PUT (updates), and DELETE.
- */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/insurances")
 public class InsuranceController {
 
     private final InsuranceService insuranceService;
 
-    public InsuranceController() {
-        this.insuranceService = new InsuranceService(new InsuranceDAO());
+    // Constructor-injection of the Spring-managed service
+    public InsuranceController(InsuranceService insuranceService) {
+        this.insuranceService = insuranceService;
     }
 
     @PostMapping
     public ResponseEntity<?> createInsurance(@RequestBody Insurance insurance) {
         try {
-            insuranceService.saveInsurance(insurance);
-            return ResponseEntity.ok("Insurance saved successfully.");
+            Insurance saved = insuranceService.saveInsurance(insurance);
+            return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Database error: " + e.getMessage());
+            return ResponseEntity
+                    .status(500)
+                    .body("Database error: " + e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getInsuranceById(@PathVariable String id) {
         try {
-            Insurance insurance = insuranceService.getInsuranceById(id);
-            return ResponseEntity.ok(insurance);
+            Insurance ins = insuranceService.getInsuranceById(id);
+            if (ins != null) {
+                return ResponseEntity.ok(ins);
+            }
+            return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Database error: " + e.getMessage());
+            return ResponseEntity
+                    .status(500)
+                    .body("Database error: " + e.getMessage());
         }
     }
 
     @GetMapping
     public ResponseEntity<?> getAllInsurances() {
         try {
-            List<Insurance> insurances = insuranceService.getAllInsurances();
-            return ResponseEntity.ok(insurances);
+            List<Insurance> list = insuranceService.getAllInsurances();
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error returning patient: " + e.getMessage());
+            return ResponseEntity
+                    .status(500)
+                    .body("Error fetching insurances: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateInsurance(@PathVariable String id, @RequestBody Insurance updatedInsurance) {
+    public ResponseEntity<?> updateInsurance(
+            @PathVariable String id,
+            @RequestBody Insurance updatedInsurance
+    ) {
         try {
             updatedInsurance.setInsuranceId(id);
-            insuranceService.saveInsurance(updatedInsurance);
-            return ResponseEntity.ok("Patient updated successfully.");
+            Insurance saved = insuranceService.saveInsurance(updatedInsurance);
+            return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Error updating insurance: " + e.getMessage());
+            return ResponseEntity
+                    .status(500)
+                    .body("Database error: " + e.getMessage());
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInsurance(@PathVariable String id) {
         try {
             insuranceService.deleteInsurance(id);
-            return ResponseEntity.ok("Insurance deleted successfully.");
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Could not delete patient: " + e.getMessage());
+            return ResponseEntity
+                    .status(500)
+                    .body("Database error: " + e.getMessage());
         }
     }
 }

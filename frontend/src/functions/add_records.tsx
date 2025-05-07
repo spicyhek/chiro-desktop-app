@@ -24,7 +24,7 @@ export default function AddRecordSection() {
       .then((res) => {
         if (res.ok) {
           alert('Record added!');
-          setNewRecord({  // Fixed reset to match record fields
+          setNewRecord({  // Fixed reset to match medicalRecord fields
             recordId: '',
             patientId: '',
             doctorId: '',
@@ -37,7 +37,7 @@ export default function AddRecordSection() {
             nextVisitRecommendedDate: '',
           });
         } else {
-          alert('Failed to add record.');
+          alert('Failed to add medicalRecord.');
         }
       })
       .catch(() => alert('Server error — check backend.'));
@@ -53,7 +53,7 @@ export default function AddRecordSection() {
   };
 
   return (
-    <div className="add-record-form">
+    <div className="add-medicalRecord-form">
       <h3>New Record</h3>
 
       <input

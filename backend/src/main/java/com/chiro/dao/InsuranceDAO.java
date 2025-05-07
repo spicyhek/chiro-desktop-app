@@ -1,27 +1,29 @@
 package com.chiro.dao;
 
-import com.chiro.config.DatabaseConfig;
 import com.chiro.models.Insurance;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class InsuranceDAO {
-    private final DatabaseConfig dbConfig;
+    private final DataSource dataSource;
 
-    public InsuranceDAO() {
-        this.dbConfig = DatabaseConfig.getInstance();
+    public InsuranceDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    public InsuranceDAO(DatabaseConfig dbConfig) {
-        this.dbConfig = dbConfig;
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     public Insurance findById(String insuranceId) throws SQLException {
         String sql = "SELECT * FROM Insurance WHERE insuranceId = ?";
-        try (Connection conn = dbConfig.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, insuranceId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -36,7 +38,7 @@ public class InsuranceDAO {
     public List<Insurance> findAll() throws SQLException {
         List<Insurance> insurances = new ArrayList<>();
         String sql = "SELECT * FROM Insurance";
-        try (Connection conn = dbConfig.getConnection();
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -50,7 +52,6 @@ public class InsuranceDAO {
         if (insurance.getInsuranceId() == null || insurance.getInsuranceId().isEmpty()) {
             throw new IllegalArgumentException("Insurance ID must be provided");
         }
-        
         if (findById(insurance.getInsuranceId()) == null) {
             insert(insurance);
         } else {
@@ -59,9 +60,12 @@ public class InsuranceDAO {
     }
 
     private void insert(Insurance insurance) throws SQLException {
-        String sql = "INSERT INTO Insurance (insuranceId, insuranceProvider, createdAt, updatedAt) " +
-                    "VALUES (?, ?, ?, ?)";
-        try (Connection conn = dbConfig.getConnection();
+        String sql = """
+            INSERT INTO Insurance
+              (insuranceId, insuranceProvider, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?)
+            """;
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             setStatementParameters(stmt, insurance);
             stmt.executeUpdate();
@@ -69,8 +73,12 @@ public class InsuranceDAO {
     }
 
     private void update(Insurance insurance) throws SQLException {
-        String sql = "UPDATE Insurance SET insuranceProvider = ?, updatedAt = ? WHERE insuranceId = ?";
-        try (Connection conn = dbConfig.getConnection();
+        String sql = """
+            UPDATE Insurance
+            SET insuranceProvider = ?, updatedAt = ?
+            WHERE insuranceId = ?
+            """;
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, insurance.getInsuranceProvider());
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -81,7 +89,7 @@ public class InsuranceDAO {
 
     public void delete(String insuranceId) throws SQLException {
         String sql = "DELETE FROM Insurance WHERE insuranceId = ?";
-        try (Connection conn = dbConfig.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, insuranceId);
             stmt.executeUpdate();
@@ -92,20 +100,24 @@ public class InsuranceDAO {
         Insurance insurance = new Insurance();
         insurance.setInsuranceId(rs.getString("insuranceId"));
         insurance.setInsuranceProvider(rs.getString("insuranceProvider"));
-        
-        Timestamp createdAt = rs.getTimestamp("createdAt");
-        insurance.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
-        
-        Timestamp updatedAt = rs.getTimestamp("updatedAt");
-        insurance.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
-        
+
+        Timestamp created = rs.getTimestamp("createdAt");
+        if (created != null) {
+            insurance.setCreatedAt(created.toLocalDateTime());
+        }
+
+        Timestamp updated = rs.getTimestamp("updatedAt");
+        if (updated != null) {
+            insurance.setUpdatedAt(updated.toLocalDateTime());
+        }
         return insurance;
     }
 
-    private void setStatementParameters(PreparedStatement stmt, Insurance insurance) throws SQLException {
+    private void setStatementParameters(PreparedStatement stmt, Insurance insurance)
+            throws SQLException {
         stmt.setString(1, insurance.getInsuranceId());
         stmt.setString(2, insurance.getInsuranceProvider());
         stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
         stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
     }
-} 
+}

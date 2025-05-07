@@ -3,19 +3,17 @@ package com.chiro.service;
 import com.chiro.dao.PatientDAO;
 import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
 // Service for Patient DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting. Call these methods in the controller
 // Additional checks can be made if needed
+@Service
 public class PatientService {
 
     private final PatientDAO patientDAO;
-
-    public PatientService() {
-        this.patientDAO = new PatientDAO();
-    }
 
     public PatientService(PatientDAO patientDAO) {
         this.patientDAO = patientDAO;

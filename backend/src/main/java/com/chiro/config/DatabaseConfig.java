@@ -1,9 +1,13 @@
+/*
 package com.chiro.config;
+
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Component
 public class DatabaseConfig {
     private static final String DEFAULT_DB_URL = "jdbc:sqlite:chiropractic.db";
     private static DatabaseConfig instance;
@@ -41,4 +45,5 @@ public class DatabaseConfig {
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(dbUrl);
     }
-} 
+}
+ */

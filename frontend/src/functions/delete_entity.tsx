@@ -39,7 +39,7 @@ const DeleteEntity: React.FC = () => {
         >
           <option value="appointments">Appointment</option>
           <option value="patients">Patient</option>
-          <option value="records">Record</option>
+          <option value="medicalRecords">Record</option>
           <option value="doctors">Doctor</option>
         </select>
         <input

@@ -9,7 +9,7 @@ public class Patient {
     private LocalDate dateOfBirth;
     private String email;
     private String phone;
-    private Integer insuranceId;
+    private String insuranceId;
     private String emergencyContactName;
     private String emergencyContactPhone;
     private LocalDateTime createdAt;
@@ -20,7 +20,7 @@ public class Patient {
 
     // Constructor with all fields
     public Patient(String patientId, String name, LocalDate dateOfBirth, String email, 
-                  String phone, Integer insuranceId, String emergencyContactName,
+                  String phone, String insuranceId, String emergencyContactName,
                   String emergencyContactPhone, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.patientId = patientId;
         this.name = name;
@@ -75,11 +75,11 @@ public class Patient {
         this.phone = phone;
     }
 
-    public Integer getInsuranceId() {
+    public String getInsuranceId() {
         return insuranceId;
     }
 
-    public void setInsuranceId(Integer insuranceId) {
+    public void setInsuranceId(String insuranceId) {
         this.insuranceId = insuranceId;
     }
 

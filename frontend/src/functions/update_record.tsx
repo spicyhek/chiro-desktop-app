@@ -22,7 +22,7 @@ const UpdateRecord: React.FC = () => {
         setStatus("Record updated successfully.");
       } else {
         const error = await response.json();
-        setStatus(`Error: ${error.message || "Failed to update record."}`);
+        setStatus(`Error: ${error.message || "Failed to update medicalRecord."}`);
       }
     } catch {
       setStatus("Error: Unable to reach the server.");

@@ -3,7 +3,7 @@ package com.chiro.models;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Record {
+public class MedicalRecord {
     private String recordId;
     private String patientId;
     private String doctorId;
@@ -18,13 +18,13 @@ public class Record {
     private LocalDateTime updatedAt;
 
     // Default constructor
-    public Record() {}
+    public MedicalRecord() {}
 
     // Constructor with all fields
-    public Record(String recordId, String patientId, String doctorId, String appointmentId,
-                 LocalDate visitDate, String symptoms, String diagnosis, String treatment,
-                 String notes, LocalDate nextVisitRecommendedDate,
-                 LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public MedicalRecord(String recordId, String patientId, String doctorId, String appointmentId,
+                         LocalDate visitDate, String symptoms, String diagnosis, String treatment,
+                         String notes, LocalDate nextVisitRecommendedDate,
+                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.recordId = recordId;
         this.patientId = patientId;
         this.doctorId = doctorId;

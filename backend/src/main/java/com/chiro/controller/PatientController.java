@@ -2,17 +2,12 @@ package com.chiro.controller;
 
 import com.chiro.models.Patient;
 import com.chiro.service.PatientService;
-import com.chiro.dao.PatientDAO;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
-/*
-Patient controller. Supports HTTP requests POST, GET (patients by ID and all patients), PUT (updates), and DELETE.
- */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/patients")
@@ -20,22 +15,20 @@ public class PatientController {
 
     private final PatientService patientService;
 
-    public PatientController() {
-        this.patientService = new PatientService(new PatientDAO());
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
     }
 
     @PostMapping
     public ResponseEntity<?> createPatient(@RequestBody Patient patient) {
         try {
             Patient saved = patientService.savePatient(patient);
-            patientService.savePatient(patient);
-            return ResponseEntity.ok(patient);
+            return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Database error:" + e.getMessage());
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
         }
-
     }
 
     @GetMapping
@@ -44,21 +37,19 @@ public class PatientController {
             List<Patient> patients = patientService.getAllPatients();
             return ResponseEntity.ok(patients);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error returning patients:" + e.getMessage());
+            return ResponseEntity.status(500).body("Error fetching patients: " + e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPatientById(@PathVariable("id") String id) {
+    public ResponseEntity<?> getPatientById(@PathVariable String id) {
         try {
             Patient patient = patientService.getPatientById(id);
-            if(patient != null) {
-                return ResponseEntity.ok(patient);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error returning patient:" + e.getMessage());
+            return ResponseEntity.ok(patient);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (SQLException e) {
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
         }
     }
 
@@ -66,23 +57,24 @@ public class PatientController {
     public ResponseEntity<?> updatePatient(@PathVariable String id, @RequestBody Patient updatedPatient) {
         try {
             updatedPatient.setPatientId(id);
-            patientService.savePatient(updatedPatient);
-            return ResponseEntity.ok("Patient updated successfully.");
+            Patient saved = patientService.savePatient(updatedPatient);
+            return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
         } catch (SQLException e) {
-            return ResponseEntity.internalServerError().body("Error updating patient: " + e.getMessage());
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
         }
     }
 
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<?> deletePatient(@PathVariable("id") String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePatient(@PathVariable String id) {
         try {
             patientService.deletePatient(id);
-            return ResponseEntity.ok("Patient deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Could not delete patient: " + e.getMessage());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (SQLException e) {
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
         }
     }
 }
