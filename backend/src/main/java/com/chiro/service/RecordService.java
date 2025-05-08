@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 // Service for Record DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting. Call these methods in the controller
 // Additional checks can be made if needed
@@ -76,4 +77,57 @@ public class RecordService {
 
         recordDAO.delete(recordId);
     }
+
+    public MedicalRecord updateRecordPartial(String id, Map<String, Object> updates) throws SQLException {
+        MedicalRecord record = getRecordById(id);
+        if (record == null) {
+            throw new IllegalArgumentException("Record not found for ID: " + id);
+        }
+
+        // Safely update visitDate
+        Object dateObj = updates.get("visitDate");
+        if (dateObj instanceof String dateStr && !dateStr.isBlank()) {
+            try {
+                record.setVisitDate(LocalDate.parse(dateStr));
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid date format for visitDate");
+            }
+        }
+
+        // Safely update symptoms
+        Object symptomsObj = updates.get("symptoms");
+        if (symptomsObj instanceof String symptoms && !symptoms.isBlank()) {
+            record.setSymptoms(symptoms);
+        }
+
+        // Safely update diagnosis
+        Object diagnosisObj = updates.get("diagnosis");
+        if (diagnosisObj instanceof String diagnosis && !diagnosis.isBlank()) {
+            record.setDiagnosis(diagnosis);
+        }
+        Object treatmentObj = updates.get("treatment");
+        if (treatmentObj instanceof String treatment && !treatment.isBlank()) {
+            record.setTreatment(treatment);
+        }
+
+        // Safely update notes
+        Object notesObj = updates.get("notes");
+        if (notesObj instanceof String notes && !notes.isBlank()) {
+            record.setNotes(notes);
+        }
+
+        // Safely update nextRecommendedVisit
+        Object nextVisitObj = updates.get("nextRecommendedVisit");
+        if (nextVisitObj instanceof String nextVisit && !nextVisit.isBlank()) {
+            try {
+                record.setNextVisitRecommendedDate(LocalDate.parse(nextVisit));
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid date format for nextRecommendedVisit");
+            }
+        }
+        // Save and return the updated record
+        recordDAO.save(record);
+        return record;
+    }
+
 }

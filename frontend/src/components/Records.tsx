@@ -24,6 +24,7 @@ export default function Records({ data }: Props) {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Patient ID</th>
             <th>Visit Date</th>
             <th>Symptoms</th>
             <th>Diagnosis</th>
@@ -36,6 +37,7 @@ export default function Records({ data }: Props) {
           {data.map((rec) => (
             <tr key={rec.id}>
               <td>{rec.recordId}</td>
+              <td>{rec.patientId}</td>
               <td>{rec.visitDate}</td>
               <td>{rec.symptoms}</td>
               <td>{rec.diagnosis}</td>

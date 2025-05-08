@@ -1,12 +1,14 @@
 package com.chiro.controller;
 
 import com.chiro.models.Doctor;
+import com.chiro.models.MedicalRecord;
 import com.chiro.service.DoctorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -93,4 +95,16 @@ public class DoctorController {
                     .body("Could not delete doctor: " + e.getMessage());
         }
     }
+
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<?> updateDoctor(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+//        try {
+//            Doctor updated = doctorService.updateDoctorPartial(id, updates);
+//            return ResponseEntity.ok(updated);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+//        } catch (SQLException e) {
+//            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
+//        }
+//    }
 }

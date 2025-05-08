@@ -1,25 +1,43 @@
 import React, { useState } from "react";
 
-const UpdateRecord: React.FC = () => {
+type UpdateRecordProps = {
+    onUpdate: () => void;
+};
+
+const UpdateRecord: React.FC<UpdateRecordProps> = ({ onUpdate }) => {
   const [id, setId] = useState("");
-  const [patientName, setPatientName] = useState("");
+  const [patientId, setPatientId] = useState("");
   const [visitDate, setVisitDate] = useState("");
   const [symptoms, setSymptoms] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
+  const [treatment, setTreatment] = useState("");
+  const [notes, setNotes] = useState("");
+  const [nextRecommendedVisit, setRecommendedVisit] = useState("");
   const [status, setStatus] = useState("");
 
   const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
+
+    const updateData: Record<string, string> = {};
+    if (patientId) updateData.patientId = patientId;
+    if (visitDate) updateData.visitDate = visitDate;
+    if (symptoms) updateData.symptoms = symptoms;
+    if (diagnosis) updateData.diagnosis = diagnosis;
+    if (treatment) updateData.treatment = treatment;
+    if (notes) updateData.notes = notes;
+    if (nextRecommendedVisit) updateData.nextRecommendedVisit = nextRecommendedVisit;
 
     try {
-      const response = await fetch(`/records/${id}`, {
+      const response = await fetch(`http://localhost:8080/records/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patientName, visitDate, symptoms, diagnosis }),
+        body: JSON.stringify(updateData),
       });
+      console.log("Sending update:", updateData);
 
       if (response.ok) {
         setStatus("Record updated successfully.");
+        onUpdate();
       } else {
         const error = await response.json();
         setStatus(`Error: ${error.message || "Failed to update medicalRecord."}`);
@@ -29,10 +47,13 @@ const UpdateRecord: React.FC = () => {
     }
 
     setId("");
-    setPatientName("");
+    setPatientId("");
     setVisitDate("");
     setSymptoms("");
     setDiagnosis("");
+    setTreatment("");
+    setNotes("");
+    setRecommendedVisit("");
   };
 
   return (
@@ -45,11 +66,11 @@ const UpdateRecord: React.FC = () => {
         required
       />
       <input
-        type="text"
-        value={patientName}
-        onChange={(e) => setPatientName(e.target.value)}
-        placeholder="Patient Name"
-      />
+         type="text"
+         value={patientId}
+         onChange={(e) => setPatientId(e.target.value)}
+         placeholder="Patient ID"
+       />
       <input
         type="date"
         value={visitDate}
@@ -67,6 +88,24 @@ const UpdateRecord: React.FC = () => {
         value={diagnosis}
         onChange={(e) => setDiagnosis(e.target.value)}
         placeholder="Diagnosis"
+      />
+      <input
+        type="text"
+        value={treatment}
+        onChange={(e) => setTreatment(e.target.value)}
+        placeholder="Treatment"
+      />
+      <input
+        type="text"
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        placeholder="Notes"
+      />
+      <input
+        type="date"
+        value={nextRecommendedVisit}
+        onChange={(e) => setRecommendedVisit(e.target.value)}
+        placeholder="Next Recommended Visit"
       />
       <button type="submit" className="bg-blue-500 text-white p-2 rounded">
         Update Record

@@ -61,6 +61,13 @@ export default function App() {
      .catch((err) => console.error("Error loading records:", err));
  }, []);
 
+ const refreshRecords = () => {
+   fetch('http://localhost:8080/records')
+     .then((res) => res.json())
+     .then(setRecords)
+     .catch((err) => console.error("Error reloading records:", err));
+ };
+
 
   return (
     <div className="p-4">
@@ -111,7 +118,7 @@ export default function App() {
            </>
          )}
         {showDeleteForm && <DeleteEntity />}
-        {showUpdateForm && <UpdateEntity />}
+        {showUpdateForm && <UpdateEntity onUpdate={refreshRecords}/>}
        </div>
       </div>
 

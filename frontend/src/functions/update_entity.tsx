@@ -4,10 +4,15 @@ import UpdatePatient from './update_patient';
 import UpdateDoctor from './update_doctor';
 import UpdateRecord from './update_record';
 
-const UpdateEntity: React.FC = () => {
+type UpdateEntityProps = {
+  onUpdate: () => void;
+};
+
+const UpdateEntity: React.FC<UpdateEntityProps> = ({ onUpdate }) => {
   const [type, setType] = useState("appointments");
 
   return (
+
     <div className="update-entity">
      <h3>Update Data</h3>
       <select value={type} onChange={(e) => setType(e.target.value)}>
@@ -19,9 +24,9 @@ const UpdateEntity: React.FC = () => {
 
       <div className="mt-4">
         {type === "appointments" && <UpdateAppointment />}
-        {type === "patients" && <UpdatePatient />}
-        {type === "doctors" && <UpdateDoctor />}
-        {type === "medicalRecords" && <UpdateRecord />}
+        {type === "patients" && <UpdatePatient  />}
+        {type === "doctors" && <UpdateDoctor onUpdate={onUpdate} />}
+        {type === "medicalRecords" && <UpdateRecord onUpdate={onUpdate}/>}
       </div>
     </div>
   );
