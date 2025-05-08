@@ -30,11 +30,7 @@ export default function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-
-  const records = [
-       { id: 1, patientName: 'Jane Doe', visitDate: '2002-02-12', symptoms: 'backpain', diagnosis: 'stress'},
-   ];
-
+  const [records, setRecords] = useState<Record[]>([]);
 
   return (
     <div className="p-4">
@@ -80,7 +76,7 @@ export default function App() {
            <>
              <AddAppointmentSection onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}/>
              <AddPatientSection onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])} />
-             <AddRecordSection/>
+             <AddRecordSection onAdd={(newRecord) => setRecords(prev => [...prev, newRecord])}/>
              <AddDoctorSection onAdd={(newDoctor) => setDoctors(prev => [...prev, newDoctor])} />
            </>
          )}
