@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -30,7 +30,37 @@ export default function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+
   const [records, setRecords] = useState<Record[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/appointments')
+      .then((res) => res.json())
+      .then(setAppointments)
+      .catch((err) => console.error("Error loading appointments:", err));
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/patients')
+      .then((res) => res.json())
+      .then(setPatients)
+      .catch((err) => console.error("Error loading patients:", err));
+  }, []);
+
+ useEffect(() => {
+   fetch('http://localhost:8080/doctors')
+     .then((res) => res.json())
+     .then(setDoctors)
+     .catch((err) => console.error("Error loading doctors:", err));
+ }, []);
+
+ useEffect(() => {
+   fetch('http://localhost:8080/records')
+     .then((res) => res.json())
+     .then(setRecords)
+     .catch((err) => console.error("Error loading records:", err));
+ }, []);
+
 
   return (
     <div className="p-4">

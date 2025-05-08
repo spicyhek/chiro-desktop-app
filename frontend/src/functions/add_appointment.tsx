@@ -38,7 +38,6 @@ const handleAddAppointment = () => {
       }
       const created = JSON.parse(text);
       onAdd(created);
-      alert(`Appointment added! ID: ${created.appointmentId}`);
       setNewAppointment({
         patientId: '',
         doctorId: '',
@@ -86,6 +85,8 @@ const handleAddAppointment = () => {
           <select name="status" value={newAppointment.status} onChange={handleInputChange} required>
             <option value="">Select status</option>
             <option value="Scheduled">Scheduled</option>
+            <option value="Scheduled">Completed</option>
+            <option value="Scheduled">Cancelled</option>
           </select>
           <input
             name = "appointmentNotes"
