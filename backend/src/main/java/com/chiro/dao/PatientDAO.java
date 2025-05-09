@@ -24,6 +24,22 @@ public class PatientDAO {
         return dataSource.getConnection();
     }
 
+    public List<Patient> searchByName(String nameFilter) throws SQLException {
+        String sql = "SELECT * FROM Patient WHERE name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nameFilter + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Patient> results = new ArrayList<>();
+                while (rs.next()) {
+                    results.add(mapResultSetToPatient(rs));
+                }
+                return results;
+            }
+        }
+    }
+
+
     // Retrieves a Patient by their unique ID
     public Patient findById(String patientId) throws SQLException {
         String sql = "SELECT * FROM Patient WHERE patientId = ?";

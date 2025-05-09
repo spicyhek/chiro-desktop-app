@@ -5,6 +5,7 @@ import com.chiro.dao.InsuranceDAO;
 import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -21,6 +22,15 @@ public class PatientService {
     public PatientService(PatientDAO patientDAO, InsuranceDAO insuranceDAO) {
         this.patientDAO = patientDAO;
         this.insuranceDAO = insuranceDAO;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Patient> searchPatients(String nameFilter) {
+        try {
+            return patientDAO.searchByName(nameFilter);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error searching patients", ex);
+        }
     }
 
     public List<Patient> getAllPatients() throws SQLException {

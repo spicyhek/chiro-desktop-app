@@ -20,6 +20,12 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Patient>> searchPatients(@RequestParam("q") String query) {
+        List<Patient> results = patientService.searchPatients(query);
+        return ResponseEntity.ok(results);
+    }
+
     // Create a new patient
     @PostMapping
     public ResponseEntity<?> createPatient(@RequestBody Patient patient) {
