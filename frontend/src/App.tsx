@@ -4,10 +4,12 @@ import Appointments from './components/Appointments'
 import Patients from './components/Patients'
 import Records from './components/Records'
 import Doctors from './components/Doctors'
+import Insurances from './components/Insurances'
 import AddAppointmentSection from './functions/add_appointment'
 import AddPatientSection from './functions/add_patient'
 import AddRecordSection from './functions/add_records'
 import AddDoctorSection from './functions/add_doctor'
+import AddInsuranceSection from './functions/add_insurance'
 import DeleteEntity from './functions/delete_entity'
 import UpdateEntity from './functions/update_entity'
 
@@ -16,6 +18,7 @@ export default function App() {
     const [showPatients, setShowPatients]         = useState(false)
     const [showRecords, setShowRecords]           = useState(false)
     const [showDoctors, setShowDoctors]           = useState(false)
+    const [showInsurances, setShowInsurances]     = useState(false)
     const [showAddData, setShowAddData]           = useState(false)
     const [showDeleteForm, setShowDeleteForm]     = useState(false)
     const [showUpdateForm, setShowUpdateForm]     = useState(false)
@@ -24,6 +27,7 @@ export default function App() {
     const [patients, setPatients]         = useState<Patient[]>([])
     const [doctors, setDoctors]           = useState<Doctor[]>([])
     const [records, setRecords]           = useState<Record[]>([])
+    const [insurances, setInsurances]     = useState<Insurance[]>([])
 
     const refreshAppointments = () => {
         fetch('http://localhost:8080/appointments')
@@ -53,16 +57,25 @@ export default function App() {
             .catch(err => console.error("Error reloading records:", err))
     }
 
+    const refreshInsurances = () => {
+        fetch('http://localhost:8080/insurances')
+            .then(r => r.json())
+            .then(setInsurances)
+            .catch(err => console.error("Error reloading insurances:", err))
+    }
+
     useEffect(() => { refreshAppointments() }, [])
     useEffect(() => { refreshPatients()     }, [])
     useEffect(() => { refreshDoctors()      }, [])
     useEffect(() => { refreshRecords()      }, [])
+    useEffect(() => { refreshInsurances()   }, [])
 
     const handleUpdate = () => {
         refreshAppointments()
         refreshPatients()
         refreshDoctors()
         refreshRecords()
+        refreshInsurances()
     }
 
     const handleDelete = (entityType: string, id: string) => {
@@ -76,9 +89,12 @@ export default function App() {
             case 'doctors':
                 refreshDoctors()
                 break
-            case 'medicalRecords':
             case 'records':
+            case 'medicalRecords':
                 refreshRecords()
+                break
+            case 'insurances':
+                refreshInsurances()
                 break
             default:
                 console.warn('Unknown type to delete:', entityType)
@@ -91,53 +107,54 @@ export default function App() {
             <hr className="divider" />
 
             <div className="heading-row">
-                <h2 className="component-heading" onClick={() => setShowAppointments((prev) => !prev)}>Appointments</h2>
-                <h2 className="component-heading" onClick={() => setShowPatients((prev) => !prev)}>Patients</h2>
-                <h2 className="component-heading" onClick={() => setShowRecords((prev) => !prev)}>Records</h2>
-                <h2 className="component-heading" onClick={() => setShowDoctors((prev) => !prev)}>Doctors</h2>
+                <h2 className="component-heading" onClick={() => setShowAppointments(prev => !prev)}>Appointments</h2>
+                <h2 className="component-heading" onClick={() => setShowPatients(prev => !prev)}>Patients</h2>
+                <h2 className="component-heading" onClick={() => setShowRecords(prev => !prev)}>Records</h2>
+                <h2 className="component-heading" onClick={() => setShowDoctors(prev => !prev)}>Doctors</h2>
+                <h2 className="component-heading" onClick={() => setShowInsurances(prev => !prev)}>Insurances</h2>
 
-                <div className = "button_container">
-
-                    <button className="button" onClick={() => setShowAddData((prev) => !prev)}>
+                <div className="button_container">
+                    <button className="button" onClick={() => setShowAddData(prev => !prev)}>
                         {showAddData ? 'Cancel' : 'Add Data'}
                     </button>
 
-                    <button className="button" onClick={() => setShowUpdateForm((prev) => !prev)}>
+                    <button className="button" onClick={() => setShowUpdateForm(prev => !prev)}>
                         {showUpdateForm ? 'Cancel' : 'Update Data'}
                     </button>
 
-                    <button className="button" onClick={() => setShowDeleteForm((prev) => !prev)}>
+                    <button className="button" onClick={() => setShowDeleteForm(prev => !prev)}>
                         {showDeleteForm ? 'Cancel' : 'Delete Data'}
                     </button>
-
                 </div>
-
             </div>
 
             <hr className="divider" />
 
-            <div className = "lower-heading">
+            <div className="lower-heading">
                 <div className="component-box">
                     {showAppointments && <Appointments data={appointments} />}
-                    {showPatients && <Patients data={patients} />}
-                    {showRecords && <Records data={records} />}
-                    {showDoctors && <Doctors data={doctors} />}
+                    {showPatients     && <Patients     data={patients}     />}
+                    {showRecords      && <Records      data={records}      />}
+                    {showDoctors      && <Doctors      data={doctors}      />}
+                    {showInsurances   && <Insurances   data={insurances}   />}
                 </div>
 
                 <div className="function-box">
                     {showAddData && (
                         <>
-                            <AddAppointmentSection onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}/>
-                            <AddPatientSection   onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])} />
-                            <AddRecordSection    onAdd={(newRecord) => setRecords(prev => [...prev, newRecord])}/>
-                            <AddDoctorSection    onAdd={(newDoctor) => setDoctors(prev => [...prev, newDoctor])} />
+                            <AddAppointmentSection onAdd={newA => setAppointments(prev => [...prev, newA])} />
+                            <AddPatientSection     onAdd={newP => setPatients(prev => [...prev, newP])} />
+                            <AddRecordSection      onAdd={newR => setRecords(prev => [...prev, newR])} />
+                            <AddDoctorSection      onAdd={newD => setDoctors(prev => [...prev, newD])} />
+                            <AddInsuranceSection   onAdd={newI => setInsurances(prev => [...prev, newI])} />
                         </>
                     )}
+
                     {showDeleteForm && <DeleteEntity onDelete={handleDelete} />}
-                    {showUpdateForm && <UpdateEntity onUpdate={handleUpdate}/>}
+                    {showUpdateForm && <UpdateEntity onUpdate={handleUpdate} />}
                 </div>
             </div>
 
         </div>
-    );
+    )
 }
