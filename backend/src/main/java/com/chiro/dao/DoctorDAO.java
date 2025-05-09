@@ -143,7 +143,7 @@ public class DoctorDAO {
         return doctor;
     }
 
-    // Sets all parameters for insert (or similar) SQL statements
+    // Sets all parameters for SQL statements
     private void setStatementParameters(PreparedStatement stmt, Doctor doctor)
             throws SQLException {
         stmt.setString(1, doctor.getDoctorId());

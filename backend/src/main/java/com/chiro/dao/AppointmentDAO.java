@@ -147,7 +147,7 @@ public class AppointmentDAO {
         return appointment;
     }
 
-    // Sets the parameters on a PreparedStatement based on an Appointment object
+    // Sets all parameters for SQL statements
     private void setStatementParameters(PreparedStatement stmt, Appointment appointment)
             throws SQLException {
         stmt.setString(1, appointment.getAppointmentId());

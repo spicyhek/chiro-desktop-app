@@ -138,7 +138,7 @@ public class InsuranceDAO {
         return insurance;
     }
 
-    // Sets the values for an INSERT PreparedStatement from the Insurance object
+    // Sets all parameters for SQL statements
     private void setStatementParameters(PreparedStatement stmt, Insurance insurance)
             throws SQLException {
         stmt.setString(1, insurance.getInsuranceId());
