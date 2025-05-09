@@ -23,7 +23,7 @@ const UpdateEntity: React.FC<UpdateEntityProps> = ({ onUpdate }) => {
       </select>
 
       <div className="mt-4">
-        {type === "appointments" && <UpdateAppointment />}
+        {type === "appointments" && <UpdateAppointment onUpdate={onUpdate}/>}
         {type === "patients" && <UpdatePatient onUpdate={onUpdate}/>}
         {type === "doctors" && <UpdateDoctor onUpdate={onUpdate} />}
         {type === "medicalRecords" && <UpdateRecord onUpdate={onUpdate}/>}

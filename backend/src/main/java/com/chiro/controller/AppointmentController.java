@@ -1,12 +1,14 @@
 package com.chiro.controller;
 
 import com.chiro.models.Appointment;
+import com.chiro.models.Doctor;
 import com.chiro.service.AppointmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -63,25 +65,25 @@ public class AppointmentController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateAppointment(
-            @PathVariable String id,
-            @RequestBody Appointment updatedAppointment
-    ) {
-        try {
-            updatedAppointment.setAppointmentId(id);
-            Appointment saved = appointmentService.saveAppointment(updatedAppointment);
-            return ResponseEntity.ok(saved);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Validation error: " + e.getMessage());
-        } catch (SQLException e) {
-            return ResponseEntity
-                    .status(500)
-                    .body("Error updating appointment: " + e.getMessage());
-        }
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<?> updateAppointment(
+//            @PathVariable String id,
+//            @RequestBody Appointment updatedAppointment
+//    ) {
+//        try {
+//            updatedAppointment.setAppointmentId(id);
+//            Appointment saved = appointmentService.saveAppointment(updatedAppointment);
+//            return ResponseEntity.ok(saved);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity
+//                    .badRequest()
+//                    .body("Validation error: " + e.getMessage());
+//        } catch (SQLException e) {
+//            return ResponseEntity
+//                    .status(500)
+//                    .body("Error updating appointment: " + e.getMessage());
+//        }
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAppointment(@PathVariable String id) {
@@ -92,6 +94,18 @@ public class AppointmentController {
             return ResponseEntity
                     .badRequest()
                     .body("Could not delete appointment: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAppointment(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        try {
+            Appointment updated = appointmentService.updateAppointmentPartial(id, updates);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+        } catch (SQLException e) {
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
         }
     }
 }
