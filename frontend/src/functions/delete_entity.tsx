@@ -50,6 +50,7 @@ const DeleteEntity: React.FC<DeleteEntityProps> = ({ onDelete }) => {
             <option value="patients">Patient</option>
             <option value="medicalRecords">Record</option>
             <option value="doctors">Doctor</option>
+            <option value="insurances">Insurance</option>
           </select>
 
           <input

@@ -45,4 +45,18 @@ public class InsuranceService {
         }
         insuranceDAO.delete(id);
     }
+
+    @Transactional
+    public Insurance updateInsurance(String id, Insurance insurance) throws SQLException {
+        ServiceValidationHelper.validateNotBlank(id, "Insurance ID");
+        ServiceValidationHelper.validateNotBlank(insurance.getInsuranceProvider(), "Insurance Provider");
+
+        Insurance existing = insuranceDAO.findById(id);
+        if (existing == null) {
+            throw new IllegalArgumentException("Insurance not found: " + id);
+        }
+
+        insurance.setInsuranceId(id);
+        return insuranceDAO.update(insurance);
+    }
 }

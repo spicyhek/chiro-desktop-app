@@ -33,35 +33,35 @@ export default function App() {
         fetch('http://localhost:8080/appointments')
             .then(r => r.json())
             .then(setAppointments)
-            .catch(err => console.error("Error reloading appointments:", err))
+            .catch(err => console.error('Error reloading appointments:', err))
     }
 
     const refreshPatients = () => {
         fetch('http://localhost:8080/patients')
             .then(r => r.json())
             .then(setPatients)
-            .catch(err => console.error("Error reloading patients:", err))
+            .catch(err => console.error('Error reloading patients:', err))
     }
 
     const refreshDoctors = () => {
         fetch('http://localhost:8080/doctors')
             .then(r => r.json())
             .then(setDoctors)
-            .catch(err => console.error("Error reloading doctors:", err))
+            .catch(err => console.error('Error reloading doctors:', err))
     }
 
     const refreshRecords = () => {
         fetch('http://localhost:8080/records')
             .then(r => r.json())
             .then(setRecords)
-            .catch(err => console.error("Error reloading records:", err))
+            .catch(err => console.error('Error reloading records:', err))
     }
 
     const refreshInsurances = () => {
         fetch('http://localhost:8080/insurances')
             .then(r => r.json())
             .then(setInsurances)
-            .catch(err => console.error("Error reloading insurances:", err))
+            .catch(err => console.error('Error reloading insurances:', err))
     }
 
     useEffect(() => { refreshAppointments() }, [])
@@ -107,22 +107,20 @@ export default function App() {
             <hr className="divider" />
 
             <div className="heading-row">
-                <h2 className="component-heading" onClick={() => setShowAppointments(prev => !prev)}>Appointments</h2>
-                <h2 className="component-heading" onClick={() => setShowPatients(prev => !prev)}>Patients</h2>
-                <h2 className="component-heading" onClick={() => setShowRecords(prev => !prev)}>Records</h2>
-                <h2 className="component-heading" onClick={() => setShowDoctors(prev => !prev)}>Doctors</h2>
-                <h2 className="component-heading" onClick={() => setShowInsurances(prev => !prev)}>Insurances</h2>
+                <h2 className="component-heading" onClick={() => setShowAppointments(v => !v)}>Appointments</h2>
+                <h2 className="component-heading" onClick={() => setShowPatients(v => !v)}>Patients</h2>
+                <h2 className="component-heading" onClick={() => setShowRecords(v => !v)}>Records</h2>
+                <h2 className="component-heading" onClick={() => setShowDoctors(v => !v)}>Doctors</h2>
+                <h2 className="component-heading" onClick={() => setShowInsurances(v => !v)}>Insurances</h2>
 
                 <div className="button_container">
-                    <button className="button" onClick={() => setShowAddData(prev => !prev)}>
+                    <button className="button" onClick={() => setShowAddData(v => !v)}>
                         {showAddData ? 'Cancel' : 'Add Data'}
                     </button>
-
-                    <button className="button" onClick={() => setShowUpdateForm(prev => !prev)}>
+                    <button className="button" onClick={() => setShowUpdateForm(v => !v)}>
                         {showUpdateForm ? 'Cancel' : 'Update Data'}
                     </button>
-
-                    <button className="button" onClick={() => setShowDeleteForm(prev => !prev)}>
+                    <button className="button" onClick={() => setShowDeleteForm(v => !v)}>
                         {showDeleteForm ? 'Cancel' : 'Delete Data'}
                     </button>
                 </div>
@@ -154,7 +152,6 @@ export default function App() {
                     {showUpdateForm && <UpdateEntity onUpdate={handleUpdate} />}
                 </div>
             </div>
-
         </div>
     )
 }

@@ -72,7 +72,7 @@ public class InsuranceController {
     ) {
         try {
             updatedInsurance.setInsuranceId(id);
-            Insurance saved = insuranceService.saveInsurance(updatedInsurance);
+            Insurance saved = insuranceService.updateInsurance(id, updatedInsurance);
             return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity

@@ -71,6 +71,25 @@ public class InsuranceDAO {
             stmt.executeUpdate();
         }
     }
+    public Insurance update(Insurance insurance) throws SQLException {
+        String sql = """
+      UPDATE Insurance
+         SET insuranceProvider = ?,
+             updatedAt = ?
+       WHERE insuranceId = ?
+      """;
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, insurance.getInsuranceProvider());
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(3, insurance.getInsuranceId());
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new SQLException("No insurance found with ID: " + insurance.getInsuranceId());
+            }
+        }
+        return insurance;
+    }
 
     private Insurance mapResultSetToInsurance(ResultSet rs) throws SQLException {
         Insurance insurance = new Insurance();
