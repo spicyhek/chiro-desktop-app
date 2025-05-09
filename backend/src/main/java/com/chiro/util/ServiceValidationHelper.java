@@ -22,9 +22,8 @@ public class ServiceValidationHelper {
 
     // Regex: allows for phone numbers in format (###)###-#####, ##########, ###-###-#####
     public static void validatePhoneNumberFormat(String phoneNumber) {
-        if(phoneNumber != null && !phoneNumber.matches("/^\\(?([0-9]{3})\\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$\n" + "/gm")) {
-            throw new IllegalArgumentException(phoneNumber + "Invalid phone number format: " + phoneNumber);
-
+        if (!phoneNumber.matches("^\\d{10}$")) {
+            throw new IllegalArgumentException("Invalid phone number format: " + phoneNumber);
         }
     }
 
