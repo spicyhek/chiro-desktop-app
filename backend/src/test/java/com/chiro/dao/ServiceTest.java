@@ -31,20 +31,22 @@ public class ServiceTest {
     private RecordService recordService;
     private TestDataSeeder seeder;
 
-    @BeforeAll
-    public void initDatabase() throws Exception {
-        // Read the entire schema.sql file and split on semicolons so we run each CREATE
-        String ddl = new String(Files.readAllBytes(Paths.get("src/main/resources/schema.sql")));
-        try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
-            for (String sql : ddl.split(";")) {
-                sql = sql.trim();
-                if (!sql.isEmpty()) {
-                    stmt.execute(sql);
-                }
+
+
+
+@BeforeAll
+public void initDatabase() throws Exception {
+    String ddl = new String(Files.readAllBytes(Paths.get("src/main/resources/schema.sql")));
+    try (Connection conn = dataSource.getConnection();
+         Statement stmt = conn.createStatement()) {
+        for (String sql : ddl.split(";")) {
+            sql = sql.trim();
+            if (!sql.isEmpty()) {
+                stmt.execute(sql);
             }
         }
     }
+}
 
     @BeforeEach
     public void setup() throws Exception {
@@ -56,14 +58,14 @@ public class ServiceTest {
         RecordDAO       recordDAO       = new RecordDAO(dataSource);
 
         // Wire up your services
-        this.patientService     = new PatientService(patientDAO);
+        this.patientService     = new PatientService(patientDAO, insuranceDAO);
         this.doctorService      = new DoctorService(doctorDAO);
         this.appointmentService = new AppointmentService(appointmentDAO, patientDAO, doctorDAO);
         this.insuranceService   = new InsuranceService(insuranceDAO);
         this.recordService      = new RecordService(recordDAO, patientDAO, doctorDAO);
 
         // Seed whatever baseline data you need
-        this.seeder = new TestDataSeeder(patientDAO, doctorDAO);
+        this.seeder = new TestDataSeeder(patientDAO, doctorDAO, insuranceDAO);
         seeder.seedDefaultTestData();
     }
 
@@ -76,7 +78,7 @@ public class ServiceTest {
         p.setName("Alice");
         p.setDateOfBirth(LocalDate.of(2000, 1, 1));
         p.setEmail("alice@example.com");
-
+        p.setInsuranceId("test-insurance-1");
         assertDoesNotThrow(() -> patientService.savePatient(p));
     }
 
