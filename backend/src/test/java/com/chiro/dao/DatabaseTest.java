@@ -12,6 +12,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +29,21 @@ class DatabaseIntegrationTest {
     @Autowired AppointmentDAO appointmentDAO;
     @Autowired RecordDAO recordDAO;
     @Autowired DataSource dataSource;
+
+    @BeforeAll
+    void recreateSchema() throws Exception {
+        String ddl = new String(Files.readAllBytes(Paths.get("src/main/resources/schema.sql")));
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+            for (String sql : ddl.split(";")) {
+                String trimmed = sql.trim();
+                if (!trimmed.isEmpty()) {
+                    stmt.execute(trimmed);
+                }
+            }
+        }
+    }
+    
 
     @BeforeEach
     void cleanTables() throws Exception {

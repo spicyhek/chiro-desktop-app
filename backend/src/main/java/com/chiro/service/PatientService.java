@@ -1,6 +1,7 @@
 package com.chiro.service;
 
 import com.chiro.dao.PatientDAO;
+import com.chiro.dao.InsuranceDAO;
 import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-// Service for Patient DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting. Call these methods in the controller
-// Additional checks can be made if needed
+// Service for Patient DAOs. Checks if DAOs and their attributes are blank or null before querying or deleting.
 @Service
 public class PatientService {
 
     private final PatientDAO patientDAO;
+    private final InsuranceDAO insuranceDAO;
 
-    public PatientService(PatientDAO patientDAO) {
+    public PatientService(PatientDAO patientDAO, InsuranceDAO insuranceDAO) {
         this.patientDAO = patientDAO;
+        this.insuranceDAO = insuranceDAO;
     }
 
     public List<Patient> getAllPatients() throws SQLException {
@@ -47,10 +49,16 @@ public class PatientService {
             ServiceValidationHelper.validateEmailFormat(patient.getEmail());
         }
 
-
         if (patient.getPhone() != null) {
             ServiceValidationHelper.validatePhoneNumberFormat(patient.getPhone());
         }
+
+        if (patient.getInsuranceId() != null) {
+            if (insuranceDAO.findById(patient.getInsuranceId()) == null) {
+                throw new IllegalArgumentException("Insurance not found: " + patient.getInsuranceId());
+            }
+        }
+
         return patientDAO.save(patient);
     }
 
@@ -62,10 +70,11 @@ public class PatientService {
         }
         patientDAO.delete(patientId);
     }
+
     public Patient updatePatientPartial(String id, Map<String, Object> updates) throws SQLException {
         Patient patient = getPatientById(id);
         if (patient == null) {
-            throw new IllegalArgumentException("Doctor not found for ID: " + id);
+            throw new IllegalArgumentException("Patient not found for ID: " + id);
         }
 
         if (updates.containsKey("name")) {
@@ -103,6 +112,9 @@ public class PatientService {
         if (updates.containsKey("insuranceId")) {
             Object insuranceObj = updates.get("insuranceId");
             if (insuranceObj instanceof String insuranceId) {
+                if (insuranceDAO.findById(insuranceId) == null) {
+                    throw new IllegalArgumentException("Insurance not found: " + insuranceId);
+                }
                 patient.setInsuranceId(insuranceId);
             }
         }
@@ -119,11 +131,9 @@ public class PatientService {
             if (contactPhoneObj instanceof String contactPhone) {
                 patient.setEmergencyContactPhone(contactPhone);
             }
-
         }
-        // Save and return the updated record
+
         patientDAO.save(patient);
         return patient;
     }
-
 }

@@ -17,8 +17,11 @@ CREATE TABLE IF NOT EXISTS Patient (
     phone TEXT,
     emergencyContactName TEXT,
     emergencyContactPhone TEXT,
+    insuranceId TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (insuranceId) REFERENCES Insurance(insuranceId)
+
 );
 
 -- Create Appointment table

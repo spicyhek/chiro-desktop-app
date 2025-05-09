@@ -10,37 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Repository // Marks this as a Spring-managed DAO component
+@Repository // Marks this class as a Spring-managed DAO component
 public class PatientDAO {
     private final DataSource dataSource;
 
-    // Constructor injection of the DataSource (configured by Spring)
+    // Constructor injection of Spring's configured DataSource
     public PatientDAO(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    // Helper method to obtain a JDBC connection from the DataSource
+    // Helper method to retrieve a JDBC Connection from the DataSource
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
-    // Finds a single patient by ID
+    // Retrieves a Patient by their unique ID
     public Patient findById(String patientId) throws SQLException {
         String sql = "SELECT * FROM Patient WHERE patientId = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, patientId); // Bind ID value
+            stmt.setString(1, patientId); // Bind patient ID to query
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapResultSetToPatient(rs); // Convert result to Patient
+                    return mapResultSetToPatient(rs); // Map DB row to Patient object
                 }
             }
         }
-        return null; // Return null if no record is found
+        return null; // Return null if not found
     }
 
-    // Retrieves all patients from the database
+    // Retrieves all Patients from the database
     public List<Patient> findAll() throws SQLException {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM Patient";
@@ -49,9 +49,8 @@ public class PatientDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            // Convert each result row into a Patient object
             while (rs.next()) {
-                patients.add(mapResultSetToPatient(rs));
+                patients.add(mapResultSetToPatient(rs)); // Map each row to Patient
             }
         }
         return patients;
@@ -60,28 +59,30 @@ public class PatientDAO {
     // Saves the patient: inserts if new, otherwise updates
     public Patient save(Patient patient) throws SQLException {
         if (patient.getPatientId() == null) {
-            return insert(patient); // Insert new patient
+            return insert(patient); // No ID = new patient
         } else {
-            return update(patient); // Update existing patient
+            return update(patient); // Existing patient
         }
     }
 
-    // Inserts a new patient into the database
+    // Inserts a new Patient record into the database
     private Patient insert(Patient patient) throws SQLException {
         String sql = """
             INSERT INTO Patient (
               patientId, name, dateOfBirth, email, phone,
               emergencyContactName, emergencyContactPhone,
+              insuranceId,
               createdAt, updatedAt
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Assign new UUID as the patient ID
+            // Generate and assign UUID for new patient
             patient.setPatientId(UUID.randomUUID().toString());
 
-            // Fill in the prepared statement parameters
+            // Bind values to prepared statement
             setStatementParameters(stmt, patient);
 
             stmt.executeUpdate(); // Execute INSERT
@@ -89,58 +90,55 @@ public class PatientDAO {
         return patient;
     }
 
-    // Updates an existing patient record
+    // Updates an existing Patient record in the database
     private Patient update(Patient patient) throws SQLException {
         String sql = """
             UPDATE Patient
             SET
               name = ?, dateOfBirth = ?, email = ?, phone = ?,
               emergencyContactName = ?, emergencyContactPhone = ?,
-              updatedAt = ?
+              insuranceId = ?, updatedAt = ?
             WHERE patientId = ?
             """;
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Bind updated values
+            // Bind updated values in exact parameter order
             stmt.setString(1, patient.getName());
-            stmt.setDate(2,
-                patient.getDateOfBirth() != null
-                    ? Date.valueOf(patient.getDateOfBirth())
-                    : null
-            );
+            stmt.setDate(2, patient.getDateOfBirth() != null ? Date.valueOf(patient.getDateOfBirth()) : null);
             stmt.setString(3, patient.getEmail());
             stmt.setString(4, patient.getPhone());
             stmt.setString(5, patient.getEmergencyContactName());
             stmt.setString(6, patient.getEmergencyContactPhone());
-            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now())); // updatedAt
-            stmt.setString(8, patient.getPatientId());
+            stmt.setString(7, patient.getInsuranceId());
+            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now())); // updatedAt = now
+            stmt.setString(9, patient.getPatientId()); // WHERE condition
 
             stmt.executeUpdate(); // Execute UPDATE
         }
         return patient;
     }
 
-    // Deletes a patient by ID
+    // Deletes a patient by their ID
     public void delete(String patientId) throws SQLException {
         String sql = "DELETE FROM Patient WHERE patientId = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, patientId);
-            stmt.executeUpdate();
+            stmt.setString(1, patientId); // Bind patient ID
+            stmt.executeUpdate(); // Execute DELETE
         }
     }
 
-    // Maps a ResultSet row to a Patient object
+    // Converts a ResultSet row into a Patient object
     private Patient mapResultSetToPatient(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
 
         patient.setPatientId(rs.getString("patientId"));
         patient.setName(rs.getString("name"));
 
-        // Handle nullable dateOfBirth
+        // Handle nullable date of birth
         Date dob = rs.getDate("dateOfBirth");
         if (dob != null) {
             patient.setDateOfBirth(dob.toLocalDate());
@@ -151,11 +149,15 @@ public class PatientDAO {
         patient.setEmergencyContactName(rs.getString("emergencyContactName"));
         patient.setEmergencyContactPhone(rs.getString("emergencyContactPhone"));
 
+        // Map optional insuranceId
+        patient.setInsuranceId(rs.getString("insuranceId"));
+
         // Handle nullable createdAt and updatedAt
         Timestamp created = rs.getTimestamp("createdAt");
         if (created != null) {
             patient.setCreatedAt(created.toLocalDateTime());
         }
+
         Timestamp updated = rs.getTimestamp("updatedAt");
         if (updated != null) {
             patient.setUpdatedAt(updated.toLocalDateTime());
@@ -164,26 +166,18 @@ public class PatientDAO {
         return patient;
     }
 
-    // Sets PreparedStatement parameters for inserting a patient
+    // Binds parameters for a new patient INSERT operation
     private void setStatementParameters(PreparedStatement stmt, Patient patient)
             throws SQLException {
         stmt.setString(1, patient.getPatientId());
         stmt.setString(2, patient.getName());
-
-        // Bind nullable dateOfBirth
-        stmt.setDate(3,
-            patient.getDateOfBirth() != null
-                ? Date.valueOf(patient.getDateOfBirth())
-                : null
-        );
-
+        stmt.setDate(3, patient.getDateOfBirth() != null ? Date.valueOf(patient.getDateOfBirth()) : null);
         stmt.setString(4, patient.getEmail());
         stmt.setString(5, patient.getPhone());
         stmt.setString(6, patient.getEmergencyContactName());
         stmt.setString(7, patient.getEmergencyContactPhone());
-
-        // Set createdAt and updatedAt to now
-        stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
-        stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+        stmt.setString(8, patient.getInsuranceId());
+        stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now())); // createdAt = now
+        stmt.setTimestamp(10, Timestamp.valueOf(LocalDateTime.now())); // updatedAt = now
     }
 }
