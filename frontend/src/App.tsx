@@ -68,6 +68,27 @@ export default function App() {
      .catch((err) => console.error("Error reloading records:", err));
  };
 
+ const refreshDoctors = () => {
+    fetch('http://localhost:8080/doctors')
+      .then((res) => res.json())
+      .then(setDoctors)
+      .catch((err) => console.error("Error reloading doctors:", err));
+  };
+
+ const refreshPatients = () => {
+   fetch('http://localhost:8080/patients')
+      .then((res) => res.json())
+      .then(setPatients)
+      .catch((err) => console.error("Error reloading doctors:", err));
+  };
+
+
+ const handleUpdate = () => {
+   refreshRecords();
+   refreshDoctors();
+   refreshPatients();
+ };
+
 
   return (
     <div className="p-4">
@@ -118,7 +139,7 @@ export default function App() {
            </>
          )}
         {showDeleteForm && <DeleteEntity />}
-        {showUpdateForm && <UpdateEntity onUpdate={refreshRecords}/>}
+        {showUpdateForm && <UpdateEntity onUpdate={handleUpdate}/>}
        </div>
       </div>
 

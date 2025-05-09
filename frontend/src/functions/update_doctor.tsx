@@ -4,7 +4,7 @@ type UpdateDoctorProps = {
     onUpdate: () => void;
 }
 
-const UpdateDoctor: React.FC = () => {
+const UpdateDoctor: React.FC<UpdateDoctorProps> = ({ onUpdate }) => {
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [specialization, setSpecialization] = useState("");
@@ -14,10 +14,11 @@ const UpdateDoctor: React.FC = () => {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const updateDoctor: Doctor<string, string> = {};
-      if (name) updateData.name = name;
-      if (specialization) updateData.specialization = specialization;
-      if (licenseNumber) updateData.licenseNumber = licenseNumber;
+    const updateData: Record<string, string> = {};
+
+    if (name) updateData.name = name;
+    if (specialization) updateData.specialization = specialization;
+    if (licenseNumber) updateData.licenseNumber = licenseNumber;
 
     try {
       const response = await fetch(`http://localhost:8080/doctors/${id}`, {

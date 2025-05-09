@@ -24,7 +24,7 @@ const UpdateEntity: React.FC<UpdateEntityProps> = ({ onUpdate }) => {
 
       <div className="mt-4">
         {type === "appointments" && <UpdateAppointment />}
-        {type === "patients" && <UpdatePatient  />}
+        {type === "patients" && <UpdatePatient onUpdate={onUpdate}/>}
         {type === "doctors" && <UpdateDoctor onUpdate={onUpdate} />}
         {type === "medicalRecords" && <UpdateRecord onUpdate={onUpdate}/>}
       </div>
