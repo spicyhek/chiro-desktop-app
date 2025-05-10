@@ -25,5 +25,5 @@ npm run dev
 To run backend must compiled ChiroApplication
 
 ```
-cd backend/src/main/util/ChiroApplication
+cd backend/src/main/java/com/chiro
 ```
