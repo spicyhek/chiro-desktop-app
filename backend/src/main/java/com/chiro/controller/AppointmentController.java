@@ -28,7 +28,6 @@ public class AppointmentController {
         return searchByPatient(q);
     }
 
-
     @GetMapping("/searchByPatient")
     public ResponseEntity<?> searchByPatient(@RequestParam("q") String q) {
         try {
