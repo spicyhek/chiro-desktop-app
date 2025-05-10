@@ -17,13 +17,15 @@ This is a full-stack web application for managing a chiropractor’s data:
 
 
 ## Running Application
+Through root, run the following commands then click the link that appears once the command runs:
+
 ```
 cd frontend
 npm install
 npm run dev
 ```
-To run backend must compiled ChiroApplication
+To run, the backend must compiled and ran through the main class, ChiroApplication. This starts the Spring Boot server.
 
 ```
-cd backend/src/main/java/com/chiro
+cd backend/src/main/java/com/chiro/util/ChiroApplication
 ```
