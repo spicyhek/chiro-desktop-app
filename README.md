@@ -19,6 +19,7 @@ This is a full-stack web application for managing a chiropractor’s data:
 ## Running Application
 ```
 cd frontend
+npm install
 npm run dev
 ```
 To run backend must compiled ChiroApplication
