@@ -2,6 +2,7 @@
 package com.chiro.dao;
 
 import com.chiro.models.Insurance;
+import com.chiro.models.Patient;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -21,6 +22,21 @@ public class InsuranceDAO {
 
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    public List<Insurance> searchByName(String nameFilter) throws SQLException {
+        String sql = "SELECT * FROM Patient WHERE name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nameFilter + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Insurance> results = new ArrayList<>();
+                while (rs.next()) {
+                    results.add(mapResultSetToInsurance(rs));
+                }
+                return results;
+            }
+        }
     }
 
     public Insurance findById(String insuranceId) throws SQLException {

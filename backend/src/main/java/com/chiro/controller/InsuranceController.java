@@ -1,6 +1,7 @@
 package com.chiro.controller;
 
 import com.chiro.models.Insurance;
+import com.chiro.models.Patient;
 import com.chiro.service.InsuranceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,12 @@ public class InsuranceController {
     // Constructor-injection of the Spring-managed service
     public InsuranceController(InsuranceService insuranceService) {
         this.insuranceService = insuranceService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Insurance>> searchInsurance(@RequestParam("q") String query) {
+        List<Insurance> results = insuranceService.searchInsurance(query);
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping

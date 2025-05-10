@@ -1,6 +1,7 @@
 package com.chiro.dao;
 
 import com.chiro.models.MedicalRecord;
+import com.chiro.models.Patient;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -22,6 +23,21 @@ public class RecordDAO {
     // Retrieves a connection from the connection pool
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    public List<MedicalRecord> searchByName(String nameFilter) throws SQLException {
+        String sql = "SELECT * FROM Patient WHERE name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nameFilter + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<MedicalRecord> results = new ArrayList<>();
+                while (rs.next()) {
+                    results.add(mapResultSetToRecord(rs));
+                }
+                return results;
+            }
+        }
     }
 
     // Retrieves a medical record by its unique ID

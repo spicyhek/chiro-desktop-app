@@ -5,8 +5,10 @@ import com.chiro.dao.PatientDAO;
 import com.chiro.dao.DoctorDAO;
 import com.chiro.models.Appointment;
 import com.chiro.models.Doctor;
+import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -31,6 +33,15 @@ public class AppointmentService {
         this.patientDAO = patientDAO;
         this.doctorDAO = doctorDAO;
     }
+
+
+
+    public List<Appointment> searchAppointmentsByPatient(String nameFilter) throws SQLException {
+        ServiceValidationHelper.validateNotBlank(nameFilter, "Patient name filter");
+        return appointmentDAO.searchByPatientName(nameFilter);
+    }
+
+
 
     public List<Appointment> getAllAppointments() throws SQLException {
         return appointmentDAO.findAll();
@@ -116,8 +127,10 @@ public class AppointmentService {
             appt.setAppointmentNotes(appointmentNotes);
         }
 
+
         // Save and return the updated appointment
         appointmentDAO.save(appt);
         return appt;
     }
+
 }

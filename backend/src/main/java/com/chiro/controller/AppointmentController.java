@@ -2,6 +2,7 @@ package com.chiro.controller;
 
 import com.chiro.models.Appointment;
 import com.chiro.models.Doctor;
+import com.chiro.models.Patient;
 import com.chiro.service.AppointmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,24 @@ public class AppointmentController {
     // Spring will autowire the AppointmentService bean here
     public AppointmentController(AppointmentService appointmentService) {
         this.appointmentService = appointmentService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByPatientAlias(@RequestParam("q") String q) {
+        return searchByPatient(q);
+    }
+
+
+    @GetMapping("/searchByPatient")
+    public ResponseEntity<?> searchByPatient(@RequestParam("q") String q) {
+        try {
+            List<Appointment> matches = appointmentService.searchAppointmentsByPatient(q);
+            return ResponseEntity.ok(matches);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Validation error: " + e.getMessage());
+        } catch (SQLException e) {
+            return ResponseEntity.status(500).body("Database error: " + e.getMessage());
+        }
     }
 
     @PostMapping

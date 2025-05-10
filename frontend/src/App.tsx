@@ -145,11 +145,11 @@ export default function App() {
             .then(setInsurances)
             .catch(console.error)
 
-    useEffect(refreshAppointments, [])
-    useEffect(refreshPatients,     [])
-    useEffect(refreshRecords,      [])
-    useEffect(refreshDoctors,      [])
-    useEffect(refreshInsurances,   [])
+    useEffect(() => { refreshAppointments() }, [])
+    useEffect(() => { refreshPatients()     }, [])
+    useEffect(() => { refreshRecords()      }, [])
+    useEffect(() => { refreshDoctors()      }, [])
+    useEffect(() => { refreshInsurances()   }, [])
 
     const handleUpdate = () => {
         refreshAppointments()

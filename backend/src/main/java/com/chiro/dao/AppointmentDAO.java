@@ -1,6 +1,7 @@
 package com.chiro.dao;
 
 import com.chiro.models.Appointment;
+import com.chiro.models.Patient;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class AppointmentDAO {
     private final DataSource dataSource;
 
+
     // Constructor injection of the DataSource (typically configured by Spring Boot)
     public AppointmentDAO(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -22,6 +24,29 @@ public class AppointmentDAO {
     // Helper method to get a database connection from the DataSource
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    public List<Appointment> searchByPatientName(String nameFilter) throws SQLException {
+        String sql = """
+            SELECT a.*
+              FROM Appointment a
+              JOIN Patient    p ON a.patientId = p.patientId
+             WHERE p.name LIKE ?
+            """;
+
+        List<Appointment> results = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + nameFilter + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(mapResultSetToAppointment(rs));
+                }
+            }
+        }
+        return results;
     }
 
     // Finds a single appointment by its ID

@@ -1,6 +1,7 @@
 package com.chiro.dao;
 
 import com.chiro.models.Doctor;
+import com.chiro.models.Patient;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -23,6 +24,26 @@ public class DoctorDAO {
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
+
+    public List<Doctor> searchByName(String nameFilter) throws SQLException {
+        String sql = "SELECT * FROM Doctor WHERE LOWER(name) LIKE ?";
+        List<Doctor> results = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + nameFilter.toLowerCase() + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(mapResultSetToDoctor(rs));
+                }
+            }
+        }
+
+        return results;
+    }
+
 
     // Retrieves a Doctor by its ID
     public Doctor findById(String doctorId) throws SQLException {

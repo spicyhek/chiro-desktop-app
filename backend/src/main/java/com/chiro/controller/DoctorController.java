@@ -2,6 +2,7 @@ package com.chiro.controller;
 
 import com.chiro.models.Doctor;
 import com.chiro.models.MedicalRecord;
+import com.chiro.models.Patient;
 import com.chiro.service.DoctorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,12 @@ public class DoctorController {
 
     public DoctorController(DoctorService doctorService) {
         this.doctorService = doctorService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Doctor>> searchDoctors(@RequestParam("q") String query) {
+        List<Doctor> results = doctorService.searchDoctors(query);
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping

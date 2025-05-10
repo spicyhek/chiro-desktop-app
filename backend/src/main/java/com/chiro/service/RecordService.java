@@ -4,8 +4,10 @@ import com.chiro.dao.RecordDAO;
 import com.chiro.dao.PatientDAO;
 import com.chiro.dao.DoctorDAO;
 import com.chiro.models.MedicalRecord;
+import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -26,6 +28,16 @@ public class RecordService {
         this.patientDAO = patientDAO;
         this.doctorDAO = doctorDAO;
     }
+
+    @Transactional(readOnly = true)
+    public List<MedicalRecord> searchRecords(String nameFilter) {
+        try {
+            return recordDAO.searchByName(nameFilter);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error searching patients", ex);
+        }
+    }
+
 
     public List<MedicalRecord> getAllRecords() throws SQLException {
         return recordDAO.findAll();

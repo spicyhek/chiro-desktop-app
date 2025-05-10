@@ -1,6 +1,7 @@
 package com.chiro.controller;
 
 import com.chiro.models.MedicalRecord;
+import com.chiro.models.Patient;
 import com.chiro.service.RecordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,12 @@ public class RecordController {
 
     public RecordController(RecordService recordService) {
         this.recordService = recordService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MedicalRecord>> searchRecords(@RequestParam("q") String query) {
+        List<MedicalRecord> results = recordService.searchRecords(query);
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping

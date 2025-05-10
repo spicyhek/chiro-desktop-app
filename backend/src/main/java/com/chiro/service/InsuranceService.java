@@ -2,6 +2,7 @@ package com.chiro.service;
 
 import com.chiro.dao.InsuranceDAO;
 import com.chiro.models.Insurance;
+import com.chiro.models.Patient;
 import com.chiro.util.ServiceValidationHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,16 @@ public class InsuranceService {
     public InsuranceService(InsuranceDAO insuranceDAO) {
         this.insuranceDAO = insuranceDAO;
     }
+
+    @Transactional(readOnly = true)
+    public List<Insurance> searchInsurance(String nameFilter) {
+        try {
+            return insuranceDAO.searchByName(nameFilter);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error searching patients", ex);
+        }
+    }
+
 
     @Transactional
     public Insurance saveInsurance(Insurance insurance) throws SQLException {
