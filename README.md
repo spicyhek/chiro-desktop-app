@@ -14,3 +14,15 @@ This is a full-stack web application for managing a chiropractor’s data:
 - **Maven** (or Gradle) for building the backend
 - **Node.js 16+** and **npm** (or Yarn) for the frontend
 - **SQLite 3** (or switch to another JDBC-compatible DB if desired)
+
+
+## Running Application
+```
+cd frontend
+npm run dev
+```
+To run backend must compiled ChiroApplication
+
+```
+cd backend/src/main/util/ChiroApplication
+```
