@@ -16,35 +16,41 @@ type Props = {
 export default function Patients({ data }: Props) {
   return (
     <div className="patients-box">
-        <h2>Patients</h2>
-      <table className="components-table" border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Patient</th>
-            <th>Date of Birth</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Insurance ID</th>
-            <th>Emergency Contact</th>
-            <th>Emergency Contact Phone</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="data-grid">
+        <div className="data-grid__header">
+          <div className="data-grid__cell data-grid__cell--header">ID</div>
+          <div className="data-grid__cell data-grid__cell--header">Patient</div>
+          <div className="data-grid__cell data-grid__cell--header">Date of Birth</div>
+          <div className="data-grid__cell data-grid__cell--header">Email</div>
+          <div className="data-grid__cell data-grid__cell--header">Phone</div>
+          <div className="data-grid__cell data-grid__cell--header">Insurance ID</div>
+          <div className="data-grid__cell data-grid__cell--header">Emergency Contact</div>
+          <div className="data-grid__cell data-grid__cell--header">Emergency Phone</div>
+        </div>
+        <div className="data-grid__body">
           {data.map((pat) => (
-            <tr key={pat.id}>
-              <td>{pat.patientId}</td>
-              <td>{pat.name}</td>
-              <td>{new Date(pat.dateOfBirth).toLocaleDateString()}</td>
-              <td>{pat.email}</td>
-              <td>{pat.phone}</td>
-              <td>{pat.insuranceId}</td>
-              <td>{pat.emergencyContactName}</td>
-              <td>{pat.emergencyContactPhone}</td>
-            </tr>
+            <div className="data-grid__row" key={pat.patientId}>
+              <div className="data-grid__cell">{pat.patientId}</div>
+              <div className="data-grid__cell">{pat.name}</div>
+              <div className="data-grid__cell">
+                {new Date(pat.dateOfBirth).toLocaleDateString()}
+              </div>
+              <div className="data-grid__cell data-grid__cell--truncate">
+                {pat.email}
+              </div>
+              <div className="data-grid__cell">{pat.phone}</div>
+              <div className="data-grid__cell">{pat.insuranceId}</div>
+              <div className="data-grid__cell data-grid__cell--truncate">
+                {pat.emergencyContactName}
+              </div>
+              <div className="data-grid__cell">{pat.emergencyContactPhone}</div>
+            </div>
           ))}
-        </tbody>
-      </table>
+          {data.length === 0 && (
+            <div className="data-grid__empty">No patients yet.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

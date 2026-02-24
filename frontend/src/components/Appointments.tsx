@@ -15,31 +15,35 @@ type Props = {
 export default function Appointments({ data }: Props) {
   return (
     <div className="appointments-box">
-        <h2>Appointments</h2>
-      <table className="components-table" border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Patient</th>
-            <th>Doctor</th>
-            <th>Scheduled</th>
-            <th>Status</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="data-grid">
+        <div className="data-grid__header">
+          <div className="data-grid__cell data-grid__cell--header">ID</div>
+          <div className="data-grid__cell data-grid__cell--header">Patient</div>
+          <div className="data-grid__cell data-grid__cell--header">Doctor</div>
+          <div className="data-grid__cell data-grid__cell--header">Scheduled</div>
+          <div className="data-grid__cell data-grid__cell--header">Status</div>
+          <div className="data-grid__cell data-grid__cell--header">Notes</div>
+        </div>
+        <div className="data-grid__body">
           {data.map((appt) => (
-            <tr key={appt.appointmentId}>
-              <td>{appt.appointmentId}</td>
-              <td>{appt.patientId}</td>
-              <td>{appt.doctorId}</td>
-              <td>{new Date(appt.scheduledDateTime).toLocaleString()}</td>
-              <td>{appt.status}</td>
-              <td>{appt.appointmentNotes}</td>
-            </tr>
+            <div className="data-grid__row" key={appt.appointmentId ?? `${appt.patientId}-${appt.doctorId}-${appt.scheduledDateTime}`}>
+              <div className="data-grid__cell">{appt.appointmentId}</div>
+              <div className="data-grid__cell">{appt.patientId}</div>
+              <div className="data-grid__cell">{appt.doctorId}</div>
+              <div className="data-grid__cell">
+                {new Date(appt.scheduledDateTime).toLocaleString()}
+              </div>
+              <div className="data-grid__cell">{appt.status}</div>
+              <div className="data-grid__cell data-grid__cell--truncate">
+                {appt.appointmentNotes}
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
+          {data.length === 0 && (
+            <div className="data-grid__empty">No appointments yet.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

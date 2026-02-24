@@ -55,7 +55,7 @@ export default function AddDoctorSection({ onAdd }: Props) {
   };
 
   return (
-    <div>
+    <div className="add-doctor-form">
       <h3>New Doctor</h3>
       <input
         name="name"

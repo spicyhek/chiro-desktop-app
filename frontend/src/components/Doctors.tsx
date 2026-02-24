@@ -12,27 +12,27 @@ type Props = {
 export default function Doctors({ data }: Props) {
   return (
     <div className="doctors-box">
-        <h2>Doctors</h2>
-      <table className="components-table" border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>Doctor ID</th>
-            <th>Name</th>
-            <th>Specialization</th>
-            <th>License Number</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="data-grid">
+        <div className="data-grid__header">
+          <div className="data-grid__cell data-grid__cell--header">Doctor ID</div>
+          <div className="data-grid__cell data-grid__cell--header">Name</div>
+          <div className="data-grid__cell data-grid__cell--header">Specialization</div>
+          <div className="data-grid__cell data-grid__cell--header">License #</div>
+        </div>
+        <div className="data-grid__body">
           {data.map((doc) => (
-            <tr key={doc.doctorId}>
-              <td>{doc.doctorId}</td>
-              <td>{doc.name}</td>
-              <td>{doc.specialization}</td>
-              <td>{doc.licenseNumber}</td>
-            </tr>
+            <div className="data-grid__row" key={doc.doctorId}>
+              <div className="data-grid__cell">{doc.doctorId}</div>
+              <div className="data-grid__cell">{doc.name}</div>
+              <div className="data-grid__cell">{doc.specialization}</div>
+              <div className="data-grid__cell">{doc.licenseNumber}</div>
+            </div>
           ))}
-        </tbody>
-      </table>
+          {data.length === 0 && (
+            <div className="data-grid__empty">No doctors yet.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

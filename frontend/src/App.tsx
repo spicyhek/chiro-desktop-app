@@ -11,46 +11,44 @@ import AddDoctorSection from './functions/add_doctor'
 import DeleteEntity from './functions/delete_entity'
 import UpdateEntity from './functions/update_entity'
 
-export default function App() {
-    const [showAppointments, setShowAppointments] = useState(false)
-    const [showPatients, setShowPatients]         = useState(false)
-    const [showRecords, setShowRecords]           = useState(false)
-    const [showDoctors, setShowDoctors]           = useState(false)
-    const [showAddData, setShowAddData]           = useState(false)
-    const [showDeleteForm, setShowDeleteForm]     = useState(false)
-    const [showUpdateForm, setShowUpdateForm]     = useState(false)
+type SectionKey = 'appointments' | 'patients' | 'records' | 'doctors'
+type ActionKey = 'add' | 'update' | 'delete'
 
+export default function App() {
     const [appointments, setAppointments] = useState<Appointment[]>([])
     const [patients, setPatients]         = useState<Patient[]>([])
     const [doctors, setDoctors]           = useState<Doctor[]>([])
     const [records, setRecords]           = useState<Record[]>([])
 
+    const [activeSection, setActiveSection] = useState<SectionKey>('appointments')
+    const [activeAction, setActiveAction]   = useState<ActionKey>('add')
+
     const refreshAppointments = () => {
         fetch('http://localhost:8080/appointments')
             .then(r => r.json())
             .then(setAppointments)
-            .catch(err => console.error("Error reloading appointments:", err))
+            .catch(err => console.error('Error reloading appointments:', err))
     }
 
     const refreshPatients = () => {
         fetch('http://localhost:8080/patients')
             .then(r => r.json())
             .then(setPatients)
-            .catch(err => console.error("Error reloading patients:", err))
+            .catch(err => console.error('Error reloading patients:', err))
     }
 
     const refreshDoctors = () => {
         fetch('http://localhost:8080/doctors')
             .then(r => r.json())
             .then(setDoctors)
-            .catch(err => console.error("Error reloading doctors:", err))
+            .catch(err => console.error('Error reloading doctors:', err))
     }
 
     const refreshRecords = () => {
         fetch('http://localhost:8080/records')
             .then(r => r.json())
             .then(setRecords)
-            .catch(err => console.error("Error reloading records:", err))
+            .catch(err => console.error('Error reloading records:', err))
     }
 
     useEffect(() => { refreshAppointments() }, [])
@@ -85,59 +83,159 @@ export default function App() {
         }
     }
 
+    const getSectionLabel = (section: SectionKey) => {
+        switch (section) {
+            case 'appointments':
+                return 'Appointments'
+            case 'patients':
+                return 'Patients'
+            case 'records':
+                return 'Records'
+            case 'doctors':
+                return 'Doctors'
+        }
+    }
+
+    const renderActiveTable = () => {
+        switch (activeSection) {
+            case 'appointments':
+                return <Appointments data={appointments} />
+            case 'patients':
+                return <Patients data={patients} />
+            case 'records':
+                return <Records data={records} />
+            case 'doctors':
+                return <Doctors data={doctors} />
+        }
+    }
+
+    const renderAddForm = () => {
+        switch (activeSection) {
+            case 'appointments':
+                return (
+                    <AddAppointmentSection
+                        onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}
+                    />
+                )
+            case 'patients':
+                return (
+                    <AddPatientSection
+                        onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])}
+                    />
+                )
+            case 'records':
+                return (
+                    <AddRecordSection
+                        onAdd={(newRecord) => setRecords(prev => [...prev, newRecord])}
+                    />
+                )
+            case 'doctors':
+                return (
+                    <AddDoctorSection
+                        onAdd={(newDoctor) => setDoctors(prev => [...prev, newDoctor])}
+                    />
+                )
+        }
+    }
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold">Chiropractor DB</h1>
-            <hr className="divider" />
-
-            <div className="heading-row">
-                <h2 className="component-heading" onClick={() => setShowAppointments((prev) => !prev)}>Appointments</h2>
-                <h2 className="component-heading" onClick={() => setShowPatients((prev) => !prev)}>Patients</h2>
-                <h2 className="component-heading" onClick={() => setShowRecords((prev) => !prev)}>Records</h2>
-                <h2 className="component-heading" onClick={() => setShowDoctors((prev) => !prev)}>Doctors</h2>
-
-                <div className = "button_container">
-
-                    <button className="button" onClick={() => setShowAddData((prev) => !prev)}>
-                        {showAddData ? 'Cancel' : 'Add Data'}
-                    </button>
-
-                    <button className="button" onClick={() => setShowUpdateForm((prev) => !prev)}>
-                        {showUpdateForm ? 'Cancel' : 'Update Data'}
-                    </button>
-
-                    <button className="button" onClick={() => setShowDeleteForm((prev) => !prev)}>
-                        {showDeleteForm ? 'Cancel' : 'Delete Data'}
-                    </button>
-
+        <div className="app-shell">
+            <header className="app-header">
+                <div className="app-header-main">
+                    <div>
+                        <h1 className="app-title">Chiropractor DB</h1>
+                        <p className="app-subtitle">Clinic overview and data management</p>
+                    </div>
+                    <div className="app-header-meta">
+                        <span className="app-badge">Backend: :8080</span>
+                    </div>
                 </div>
 
-            </div>
-
-            <hr className="divider" />
-
-            <div className = "lower-heading">
-                <div className="component-box">
-                    {showAppointments && <Appointments data={appointments} />}
-                    {showPatients && <Patients data={patients} />}
-                    {showRecords && <Records data={records} />}
-                    {showDoctors && <Doctors data={doctors} />}
-                </div>
-
-                <div className="function-box">
-                    {showAddData && (
-                        <>
-                            <AddAppointmentSection onAdd={(newAppt) => setAppointments(prev => [...prev, newAppt])}/>
-                            <AddPatientSection   onAdd={(newPatient) => setPatients(prev => [...prev, newPatient])} />
-                            <AddRecordSection    onAdd={(newRecord) => setRecords(prev => [...prev, newRecord])}/>
-                            <AddDoctorSection    onAdd={(newDoctor) => setDoctors(prev => [...prev, newDoctor])} />
-                        </>
+                <nav className="section-nav">
+                    {(['appointments', 'patients', 'records', 'doctors'] as SectionKey[]).map(
+                        (key) => (
+                            <button
+                                key={key}
+                                type="button"
+                                className={
+                                    'section-pill' +
+                                    (activeSection === key ? ' section-pill--active' : '')
+                                }
+                                onClick={() => setActiveSection(key)}
+                            >
+                                {getSectionLabel(key)}
+                            </button>
+                        ),
                     )}
-                    {showDeleteForm && <DeleteEntity onDelete={handleDelete} />}
-                    {showUpdateForm && <UpdateEntity onUpdate={handleUpdate}/>}
-                </div>
-            </div>
+                </nav>
+            </header>
 
+            <div className="app-main">
+                <aside className="app-sidebar">
+                    <p className="sidebar-label">Snapshot</p>
+                    <ul className="sidebar-list">
+                        <li className="sidebar-item">
+                            <span>Appointments</span>
+                            <span className="sidebar-count">{appointments.length}</span>
+                        </li>
+                        <li className="sidebar-item">
+                            <span>Patients</span>
+                            <span className="sidebar-count">{patients.length}</span>
+                        </li>
+                        <li className="sidebar-item">
+                            <span>Doctors</span>
+                            <span className="sidebar-count">{doctors.length}</span>
+                        </li>
+                        <li className="sidebar-item">
+                            <span>Records</span>
+                            <span className="sidebar-count">{records.length}</span>
+                        </li>
+                    </ul>
+                </aside>
+
+                <main className="app-content">
+                    <section className="panel panel--data">
+                        <div className="panel-header">
+                            <h2 className="panel-title">{getSectionLabel(activeSection)}</h2>
+                            <span className="panel-meta">
+                                {activeSection === 'appointments' && `${appointments.length} items`}
+                                {activeSection === 'patients' && `${patients.length} items`}
+                                {activeSection === 'doctors' && `${doctors.length} items`}
+                                {activeSection === 'records' && `${records.length} items`}
+                            </span>
+                        </div>
+                        <div className="panel-body">{renderActiveTable()}</div>
+                    </section>
+
+                    <section className="panel panel--manage">
+                        <div className="panel-header panel-header--split">
+                            <h2 className="panel-title">Manage data</h2>
+                            <div className="manage-tabs">
+                                {(['add', 'update', 'delete'] as ActionKey[]).map((action) => (
+                                    <button
+                                        key={action}
+                                        type="button"
+                                        className={
+                                            'manage-tab' +
+                                            (activeAction === action ? ' manage-tab--active' : '')
+                                        }
+                                        onClick={() => setActiveAction(action)}
+                                    >
+                                        {action === 'add' && 'Add'}
+                                        {action === 'update' && 'Update'}
+                                        {action === 'delete' && 'Delete'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="panel-body">
+                            {activeAction === 'add' && renderAddForm()}
+                            {activeAction === 'update' && <UpdateEntity onUpdate={handleUpdate} />}
+                            {activeAction === 'delete' && <DeleteEntity onDelete={handleDelete} />}
+                        </div>
+                    </section>
+                </main>
+            </div>
         </div>
-    );
+    )
 }
